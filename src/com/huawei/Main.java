@@ -47,7 +47,6 @@ public class Main {
 				if(intCarLine[6] == 1) {
 					Main.preset_car_list.add(intCarLine[0]);
 				}
-//				System.out.println(Main.priority_car_list);
         	}
         }
 	}
@@ -72,7 +71,6 @@ public class Main {
 				Road road = new Road(intRoadLine[0],intRoadLine[1],intRoadLine[2],
 						intRoadLine[3],intRoadLine[4],intRoadLine[5],intRoadLine[6]);
 				Main.road_dict.put(intRoadLine[0], road);
-//				System.out.println(road);
         	}
         }
 	}

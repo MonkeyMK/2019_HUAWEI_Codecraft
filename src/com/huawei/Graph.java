@@ -143,7 +143,7 @@ public class Graph {
 				this.cost_accumulation(car.route_plan, car.car_from);
 				
 				// 随机安排发车时间
-				car.car_actual_time = (car.car_id-10000)%1500 + car.car_plan_time;
+//				car.car_actual_time = (car.car_id-10000)%1500 + car.car_plan_time;
 			}
 		}
 	}
@@ -273,7 +273,7 @@ public class Graph {
 	
 	public int dis_compute(Road road, int dir) {
 		return road.road_length + 
-				(int)Math.exp((road.car_nums[dir]+0.0)/road.amount_all_position * 20) + 
+				(int)Math.exp((road.car_nums[dir]+0.0)/road.amount_all_position * 10) + 
 				10/(road.road_channel*road.road_channel);
 	}
 	
