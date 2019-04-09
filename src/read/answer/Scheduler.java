@@ -1,4 +1,4 @@
-package com.huawei;
+package read.answer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,7 +39,7 @@ public class Scheduler {
 //	public int[] sorted_road_id_list = null;  // （已完成初始化）
 	
 	// new info
-	public Graph g;
+//	public Graph g;
 	
 	
 	public Scheduler(Map<Integer, Car> car_dict, Map<Integer, Road> road_dict, Map<Integer, Cross> cross_dict,
@@ -89,7 +89,7 @@ public class Scheduler {
 		this.sort_cross_and_road();
 		
 		// new info
-		g = new Graph();
+//		g = new Graph();
 		this.arrange_cars_by_road();
 		
 		
@@ -780,8 +780,8 @@ public class Scheduler {
 							break label;
 						}
 						first_priority_car_list = road.get_car_from_sequeue(dir);
-						if(first_priority_car_list[0]!=-1)
-							update_route_plan_of_cur_car(this.car_dict.get(first_priority_car_list[0]), road);
+//						if(first_priority_car_list[0]!=-1)
+//							update_route_plan_of_cur_car(this.car_dict.get(first_priority_car_list[0]), road);
 					}
 					road.has_waiting_car = false;
 					}
@@ -808,7 +808,7 @@ public class Scheduler {
 	
 	public void update_route_plan_of_first_priority_car() {
 		// 1、更新图的权重
-		g.update_real_time_cost();
+//		g.update_real_time_cost();
 		
 		// 2、对第一优先级的车进行重新规划，规划完之后要更新信息：dir, next_road, next_road_speed等信息
 		Iterator<Map.Entry<Integer, Road>> iter1 = Main.road_dict.entrySet().iterator();
@@ -858,7 +858,7 @@ public class Scheduler {
 			        
 			        // 3、路径的实时规划
 //			        System.out.println(car.route_plan);
-					g.real_time_update_path(car, cur_cross_id, other_cross_id, car.car_to);
+//					g.real_time_update_path(car, cur_cross_id, other_cross_id, car.car_to);
 //					System.out.println(car.route_plan);
 					
 					// 4、更新dir, next_road, next_road_speed
@@ -872,7 +872,7 @@ public class Scheduler {
 	
 	public void update_route_plan_of_cur_car(Car car, Road road) {
 		// 1、更新图的权重
-		g.update_real_time_cost();
+//		g.update_real_time_cost();
 		
 		// 2、车进行重新规划，规划完之后要更新信息：dir, next_road, next_road_speed等信息
 		if(car.cur_route_plan_index == car.route_plan.size()-1)
@@ -909,7 +909,7 @@ public class Scheduler {
 	        
 	        
         // 3、路径的实时规划
-		g.real_time_update_path(car, cur_cross_id, other_cross_id, car.car_to);
+//		g.real_time_update_path(car, cur_cross_id, other_cross_id, car.car_to);
 			
 		// 4、更新dir, next_road, next_road_speed
 		car.next_road = car.route_plan.get(car.cur_route_plan_index+1);
@@ -1004,7 +1004,7 @@ public class Scheduler {
 			this.create_car_sequeue(null, -1); // 传入null表示对所有车道都更新
 			
 			// real time route plan
-			this.update_route_plan_of_first_priority_car();
+//			this.update_route_plan_of_first_priority_car();
 			
 			if(!this.drive_car_in_wait_state()) {
 				System.out.println("发生了死锁！！！！！！！！！！！！！！！！！！！！！");
@@ -1045,9 +1045,10 @@ public class Scheduler {
 		
 		System.out.println("----------------------------------------------------------------------------------");
 		System.out.println("系统调度完成！！！！");
+		System.out.println("根据公式，整个系统得分为 ：" + this.computer_score());
 		System.out.println("优先级车辆的完成时间为    ：" + this.T_pri);
 		System.out.println("整个系统的完成时间为        ：" + this.T);
-		System.out.println("根据公式，整个系统得分为 ：" + this.computer_score());  // 待完成
+		
 	}
 		
 	
