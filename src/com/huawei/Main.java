@@ -201,7 +201,7 @@ public class Main {
         create_road_dict(roadPath);
         create_cross_dict(crossPath);
         arrange_preset_data(presetAnswerPath);
-        read_answer(answerPath);  // 读答案，将path和time安排上
+//        read_answer(answerPath);  // 读答案，将path和time安排上
         
         
         // 2、建立调度器对象，并调度

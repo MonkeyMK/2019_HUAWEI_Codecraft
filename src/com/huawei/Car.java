@@ -1,6 +1,6 @@
 package com.huawei;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /** 
 * @author Ð¡Â¯×Ó 863956237@qq.com: 
@@ -19,7 +19,7 @@ public class Car {
 	
 	// info need
 	public int car_actual_time;
-	public ArrayList<Integer> route_plan = null;
+	public List<Integer> route_plan = null;
 	public int cur_route_plan_index = 0;
 	public int cur_speed = 0;
 	public int on_road = 0;
@@ -32,6 +32,8 @@ public class Car {
 	// new
 	public int cur_position = -1;
 	public int cur_channel = -1;
+	
+	public boolean has_real_time_plan = false;
 	
 	
 	public Car(int car_id, int car_from, int car_to, int car_max_speed, 
@@ -52,7 +54,7 @@ public class Car {
 		return this.car_actual_time;
 	}
 	
-	public void set_route_plan(ArrayList<Integer> route_plan) {
+	public void set_route_plan(List<Integer> route_plan) {
 		this.route_plan = route_plan;
 	}
 

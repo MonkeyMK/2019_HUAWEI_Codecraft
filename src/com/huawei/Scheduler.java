@@ -37,6 +37,9 @@ public class Scheduler {
 	public int[] sorted_cross_id_list = null;  // （已完成初始化）
 //	public int[] sorted_road_id_list = null;  // （已完成初始化）
 	
+	// new info
+	public Graph g;
+	
 	
 	public Scheduler(Map<Integer, Car> car_dict, Map<Integer, Road> road_dict, Map<Integer, Cross> cross_dict,
 			ArrayList<Integer> priority_car_list, ArrayList<Integer> preset_car_list) {
@@ -46,6 +49,35 @@ public class Scheduler {
 		this.cross_dict = cross_dict;
 		this.priority_car_list = priority_car_list;
 		this.preset_car_list = preset_car_list;
+		this.preset_car_list.sort(new Comparator<Integer>() {
+			@Override
+			public int compare(Integer o1, Integer o2) {
+				Car car1 = Main.car_dict.get(o1);
+				Car car2 = Main.car_dict.get(o2);
+				
+				if(car1.is_priority > car2.is_priority) {
+					return -1;
+				}else if(car1.is_priority == car2.is_priority) {
+					if(car1.car_actual_time < car2.car_actual_time) {
+						return -1;
+					}else if(car1.car_actual_time == car2.car_actual_time) {
+						if(car1.car_id < car2.car_id) {
+							return -1;
+						}else if(car1.car_id == car2.car_id) {
+							System.out.println("不可能，你错了！！！！！！！");
+						}else {
+							return 1;
+						}
+					}else {
+						return 1;
+					}
+				}else {
+					return 1;
+				}
+				System.out.println("不可能，你错了！！！！！！！");
+				return 0;
+			}
+		});
 		
 		this.all_car_num = this.car_dict.size();
 		this.priority_car_num = this.priority_car_list.size();
@@ -54,7 +86,12 @@ public class Scheduler {
 		// 函数调用
 		this.init_statics_dict();
 		this.sort_cross_and_road();
+		
+		// new info
+		g = new Graph();
 		this.arrange_cars_by_road();
+		
+		
 	}
 	
 	private void arrange_cars_by_road() {
@@ -500,6 +537,13 @@ public class Scheduler {
         else
             return 2;
 	}
+	
+	public int get_next_road_dir(Road cur_road, Road next_road) {
+        if(next_road.road_from == cur_road.road_from || next_road.road_from == cur_road.road_to)
+        	return 0;
+        else
+            return 1;
+	}
         
 	
 	public boolean move_to_next_road(Car cur_car, Road cur_road, int dir, int channel, int position) {
@@ -517,6 +561,8 @@ public class Scheduler {
 			this.statistics_info.put("cur_time_finish_car_num", this.statistics_info.get("cur_time_finish_car_num")+1);
 			this.statistics_info.put("waiting_car_num", this.statistics_info.get("waiting_car_num")-1);
 			this.statistics_info.put("running_car_num", this.statistics_info.get("running_car_num")-1);
+			
+			cur_road.car_nums[dir]--;
 			
 			if(cur_car.is_priority == 1) {
 				this.finished_priority_car_num += 1;
@@ -557,6 +603,12 @@ public class Scheduler {
                         cur_car.next_road_speed = this.road_dict.get(cur_car.next_road).road_speed;
                         cur_car.dir = this.get_dir(cur_car);
                     }
+                    
+                    cur_road.car_nums[dir]--;
+                    int next_road_dir = this.get_next_road_dir(cur_road, next_road);
+                    next_road.car_nums[next_road_dir]++;
+                    
+                    cur_car.has_real_time_plan = false;
                     return true;
         		}else {
         			Car front_car = next_road_matrix.get(next_road_channel).get(0);
@@ -589,6 +641,13 @@ public class Scheduler {
                             cur_car.next_road_speed = this.road_dict.get(cur_car.next_road).road_speed;
                             cur_car.dir = this.get_dir(cur_car);
                         }
+                        
+                        cur_road.car_nums[dir]--;
+                        int next_road_dir = this.get_next_road_dir(cur_road, next_road);
+                        next_road.car_nums[next_road_dir]++;
+                        
+                        cur_car.has_real_time_plan = false;
+                        
                         return true;
         			}else if(front_car.car_state == 2) {
         				cur_car = cur_road_matrix.get(channel).pollLast();
@@ -608,6 +667,13 @@ public class Scheduler {
                             cur_car.next_road_speed = this.road_dict.get(cur_car.next_road).road_speed;
                             cur_car.dir = this.get_dir(cur_car);
                         }
+                        
+                        cur_road.car_nums[dir]--;
+                        int next_road_dir = this.get_next_road_dir(cur_road, next_road);
+                        next_road.car_nums[next_road_dir]++;
+                        
+                        cur_car.has_real_time_plan = false;
+                        
                         return true;
         			}else {
         				return false;
@@ -617,14 +683,6 @@ public class Scheduler {
         }
         System.out.println("不可能进入这里！！！！！！！！！！！！！");
         return false;
-	}
-	
-	private int sum(int[] a) {
-		for(int i=0;i<a.length;i++) {
-			if(a[i]!=0)
-				return 1;
-		}
-		return 0;
 	}
 	
 	public void update_cur_channel(ArrayList<LinkedList<Car>> cur_road_matrix,
@@ -719,8 +777,8 @@ public class Scheduler {
 							
 							road.run_car_in_init_list(this.car_dict, this.road_dict,
 									this.cross_dict, this.time, true, this.statistics_info, dir);
-//							this.drive_car_init_list(true);
 							
+//							this.drive_car_init_list(true);
 						}else {
 							break label;
 						}
@@ -738,12 +796,77 @@ public class Scheduler {
 			if(deak_lock == 1) {
 				return false;
 			}
+			
+			// real time route plan
+//			this.update_route_plan_of_first_priority_car();
 		}
 		return true;
 	}
 	
 	public boolean is_finish() {
 		return this.statistics_info.get("finish_car_num") == this.all_car_num;
+	}
+	
+	public void update_route_plan_of_first_priority_car() {
+		// 1、更新图的权重
+		g.update_real_time_cost();
+		
+		// 2、对第一优先级的车进行重新规划，规划完之后要更新信息：dir, next_road, next_road_speed等信息
+		Iterator<Map.Entry<Integer, Road>> iter1 = Main.road_dict.entrySet().iterator();
+		while (iter1.hasNext()) {
+			Map.Entry<Integer, Road> entry = iter1.next();
+			Road road = entry.getValue();
+			int[] first_priority_car;
+			for(int dir=0;dir<2;dir++) {
+				if(dir==0) {
+					first_priority_car = road.from_to_first_priority_car;
+				}else {
+					first_priority_car = road.to_from_first_priority_car;
+				}
+				if(first_priority_car[0]!=-1) {
+					Car car = this.car_dict.get(first_priority_car[0]);
+					if(car.cur_route_plan_index == car.route_plan.size()-1)
+						continue;
+					
+					if(car.has_real_time_plan != false) {
+						continue;
+					}
+					car.has_real_time_plan = true;
+					
+					Road next_road = this.road_dict.get(car.route_plan.get(car.cur_route_plan_index+1));
+					int cur_cross_id;
+					int other_cross_id;
+					
+			        if(road.road_from == next_road.road_from || road.road_from == next_road.road_to) {
+			        	cur_cross_id = road.road_from;
+			        	other_cross_id = road.road_to;
+			        }else {
+			        	cur_cross_id = road.road_to;
+			        	other_cross_id = road.road_from;
+			        }
+			        
+//			        int car_num_condition = 20;
+//			        if(cur_cross_id == next_road.road_from) {
+//			        	if(next_road.car_nums[0] < car_num_condition)
+//			        		continue;
+//			        }else {
+//			        	if(next_road.car_nums[1] < car_num_condition)
+//			        		continue;
+//			        }
+			        
+			        
+			        // 3、路径的实时规划
+//			        System.out.println(car.route_plan);
+					g.real_time_update_path(car, cur_cross_id, other_cross_id, car.car_to);
+//					System.out.println(car.route_plan);
+					
+					// 4、更新dir, next_road, next_road_speed
+					car.next_road = car.route_plan.get(car.cur_route_plan_index+1);
+					car.next_road_speed = this.road_dict.get(car.next_road).road_speed;
+					car.dir = this.get_dir(car);
+				}
+			}
+		}
 	}
 	
 	public void schedule() {
@@ -758,18 +881,21 @@ public class Scheduler {
 			this.drive_car_init_list(true);
 			this.create_car_sequeue(null, -1); // 传入null表示对所有车道都更新
 			
+			// real time route plan
+			this.update_route_plan_of_first_priority_car();
+			
 			if(!this.drive_car_in_wait_state()) {
 				System.out.println("发生了死锁！！！！！！！！！！！！！！！！！！！！！");
 				System.out.println("死锁的车辆如下：");
 				
-				Iterator<Map.Entry<Integer, Car>> iter = this.car_dict.entrySet().iterator();
-				while (iter.hasNext()) {
-					Map.Entry<Integer, Car> entry = iter.next();
-					Car car = entry.getValue();
-					if(car.car_state==1) {
-						System.out.println(car);
-					}
-				}
+//				Iterator<Map.Entry<Integer, Car>> iter = this.car_dict.entrySet().iterator();
+//				while (iter.hasNext()) {
+//					Map.Entry<Integer, Car> entry = iter.next();
+//					Car car = entry.getValue();
+//					if(car.car_state==1) {
+//						System.out.println(car);
+//					}
+//				}
 				return;
 			}
 			
@@ -781,25 +907,34 @@ public class Scheduler {
             if(this.finished_time_normal_car == -1 && this.finished_normal_car_num == this.normal_car_num)
             	this.finished_time_normal_car = this.time;
 			
-            // 打印信息
-            System.out.println("当前系统调度时间为：" + this.time);
-            System.out.println("当前时刻已经完成的车数量为：" + this.statistics_info.get("finish_car_num"));
-            // 打印信息
+            // ----------------------------------- 打印信息 --------------------------------------------
+            System.out.println("----------------------------------------------------------------------------------");
+            System.out.println("当前系统调度时间为                     ：" + this.time);
+            System.out.println("当前时刻已经完成的车数量为       ：" + this.statistics_info.get("finish_car_num"));
+            System.out.println("该时间片内完成的车辆数目为       ：" + this.statistics_info.get("cur_time_finish_car_num"));
+            System.out.println("当前时间片系统中运行的车辆数目：" + this.statistics_info.get("running_car_num"));
+            System.out.println("当前时刻的发车数量为                 ：" + this.statistics_info.get("cur_time_depart_car_num"));
+            // ----------------------------------------------------------------------------------------
             
             if(this.is_finish()){
             	this.T = this.time;
                 break;
             }
 		}
+		
 		System.out.println("系统调度完成！！！！");
-//		Iterator<Map.Entry<Integer, Car>> iter = this.car_dict.entrySet().iterator();
-//		while (iter.hasNext()) {
-//			Map.Entry<Integer, Car> entry = iter.next();
-//			Car car = entry.getValue();
-//			if(car.car_state != 3) {
-//				System.out.println(car);
-//			}
-//		}
+		System.out.println("优先级车辆的完成时间为    ：" + this.T_pri);
+		System.out.println("整个系统的完成时间为        ：" + this.T);
+		System.out.println("根据公式，整个系统得分为 ：");  // 待完成
+		
+		Iterator<Map.Entry<Integer, Car>> iter = this.car_dict.entrySet().iterator();
+		while (iter.hasNext()) {
+			Map.Entry<Integer, Car> entry = iter.next();
+			Car car = entry.getValue();
+			if(car.car_state != 3) {
+				System.out.println(car);
+			}
+		}
 	}
 		
 	

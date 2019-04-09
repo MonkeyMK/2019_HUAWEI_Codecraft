@@ -28,6 +28,10 @@ public class Road {
 	public int[] to_from_first_priority_car = {-1, -1, -1};
 	public boolean has_waiting_car = false;
 	
+	// new info, 道路拥挤情况, 0->from_to;  1->to_from;
+	public int[] car_nums = {0, 0};
+	public int amount_all_position;
+	
 	public Road(int road_id, int road_length, int road_speed, int road_channel, int road_from, int road_to,
 			int road_isDuplex) {
 		super();
@@ -38,6 +42,8 @@ public class Road {
 		this.road_from = road_from;
 		this.road_to = road_to;
 		this.road_isDuplex = road_isDuplex;
+		
+		this.amount_all_position = this.road_length * this.road_channel;
 		
 		this.from_to_road_matrix = new ArrayList<>();
 		for(int i=0;i<road_channel;i++) {
@@ -84,14 +90,6 @@ public class Road {
             return 0;
         else
             return 2;
-	}
-	
-	private int sum(int[] a) {
-		for(int i=0;i<a.length;i++) {
-			if(a[i]!=0)
-				return 1;
-		}
-		return 0;
 	}
 	
 	public ArrayList<LinkedList<Car>> get_road_matrix(int direction){
@@ -211,6 +209,16 @@ public class Road {
 			}
 			
 			if(this.run_to_road(road_dict, cross_dict, car, statistics_info)) {
+				int dir;
+				if(direction==-1) {
+					if(car.car_from == this.road_from)
+						dir = 0;
+					else
+						dir = 1;
+				}else {
+					dir = direction;
+				}
+				this.car_nums[dir]++;
 				init_list.remove((Integer)car_id);
 			}
 		}
