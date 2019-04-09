@@ -1,8 +1,8 @@
 package com.huawei; 
 /** 
-* @author Ğ¡Â¯×Ó 863956237@qq.com: 
-* @version ´´½¨Ê±¼ä£º2019Äê4ÔÂ5ÈÕ ÉÏÎç10:51:43 
-* ÀàËµÃ÷ 
+* @author å°ç‚‰å­ 863956237@qq.com: 
+* @version åˆ›å»ºæ—¶é—´ï¼š2019å¹´4æœˆ5æ—¥ ä¸Šåˆ10:51:43 
+* ç±»è¯´æ˜ 
 */
 
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ public class Road {
 	public int[] to_from_first_priority_car = {-1, -1, -1};
 	public boolean has_waiting_car = false;
 	
-	// new info, µÀÂ·Óµ¼·Çé¿ö, 0->from_to;  1->to_from;
+	// new info, é“è·¯æ‹¥æŒ¤æƒ…å†µ, 0->from_to;  1->to_from;
 	public int[] car_nums = {0, 0};
 	public int amount_all_position;
 	
@@ -170,7 +170,7 @@ public class Road {
         	}
         }
         
-        System.out.println("½²µÀÀí£¬·¢³µÊÇ²»»á½øÈëÕâÀïµÄ£¬Äã´íÁË£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡");
+        System.out.println("è®²é“ç†ï¼Œå‘è½¦æ˜¯ä¸ä¼šè¿›å…¥è¿™é‡Œçš„ï¼Œä½ é”™äº†ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼");
         return false;
 	}
 	
@@ -239,7 +239,7 @@ public class Road {
         	}else {
         		int index = cur_road_matrix.get(i).size() - 1;
         		cur_car = cur_road_matrix.get(i).get(index);
-        		// Ö±½Ó×öÓÅÏÈ¼¶³µÁ¾µÄÅĞ¶Á²¢return
+        		// ç›´æ¥åšä¼˜å…ˆçº§è½¦è¾†çš„åˆ¤è¯»å¹¶return
         		if(cur_car.car_state == 1 && cur_car.is_priority == 1) {
                     if(direction == 0)
                         this.from_to_first_priority_car = new int[] {cur_car.car_id, cur_car.cur_channel, cur_car.cur_position};

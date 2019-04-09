@@ -9,33 +9,33 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /** 
-* @author Ğ¡Â¯×Ó 863956237@qq.com: 
-* @version ´´½¨Ê±¼ä£º2019Äê4ÔÂ5ÈÕ ÏÂÎç12:39:11 
-* ÀàËµÃ÷ 
+* @author å°ç‚‰å­ 863956237@qq.com: 
+* @version åˆ›å»ºæ—¶é—´ï¼š2019å¹´4æœˆ5æ—¥ ä¸‹åˆ12:39:11 
+* ç±»è¯´æ˜ 
 */
 public class Scheduler {
-	public Map<Integer, Car> car_dict = null;  // £¨ÒÑÍê³É³õÊ¼»¯£©
-	public Map<Integer, Road> road_dict = null;  // £¨ÒÑÍê³É³õÊ¼»¯£©
-	public Map<Integer, Cross> cross_dict = null;  // £¨ÒÑÍê³É³õÊ¼»¯£©
-	public ArrayList<Integer> priority_car_list = null;  // £¨ÒÑÍê³É³õÊ¼»¯£©
-	public ArrayList<Integer> preset_car_list = null;  // £¨ÒÑÍê³É³õÊ¼»¯£©
+	public Map<Integer, Car> car_dict = null;  // ï¼ˆå·²å®Œæˆåˆå§‹åŒ–ï¼‰
+	public Map<Integer, Road> road_dict = null;  // ï¼ˆå·²å®Œæˆåˆå§‹åŒ–ï¼‰
+	public Map<Integer, Cross> cross_dict = null;  // ï¼ˆå·²å®Œæˆåˆå§‹åŒ–ï¼‰
+	public ArrayList<Integer> priority_car_list = null;  // ï¼ˆå·²å®Œæˆåˆå§‹åŒ–ï¼‰
+	public ArrayList<Integer> preset_car_list = null;  // ï¼ˆå·²å®Œæˆåˆå§‹åŒ–ï¼‰
 	
-	public int all_car_num;  // £¨ÒÑÍê³É³õÊ¼»¯£©
-	public int priority_car_num;  // £¨ÒÑÍê³É³õÊ¼»¯£©
-	public int normal_car_num;  // £¨ÒÑÍê³É³õÊ¼»¯£©
+	public int all_car_num;  // ï¼ˆå·²å®Œæˆåˆå§‹åŒ–ï¼‰
+	public int priority_car_num;  // ï¼ˆå·²å®Œæˆåˆå§‹åŒ–ï¼‰
+	public int normal_car_num;  // ï¼ˆå·²å®Œæˆåˆå§‹åŒ–ï¼‰
 	
 	// info need
-	public int finished_priority_car_num = 0;  // £¨ÒÑÍê³É³õÊ¼»¯£©
-	public int finished_normal_car_num = 0;  // £¨ÒÑÍê³É³õÊ¼»¯£©
-	public int T_pri = -1;  // £¨ÒÑÍê³É³õÊ¼»¯£©
-	public int finished_time_normal_car = -1;  // £¨ÒÑÍê³É³õÊ¼»¯£©
-	public int T = -1;  // £¨ÒÑÍê³É³õÊ¼»¯£©
+	public int finished_priority_car_num = 0;  // ï¼ˆå·²å®Œæˆåˆå§‹åŒ–ï¼‰
+	public int finished_normal_car_num = 0;  // ï¼ˆå·²å®Œæˆåˆå§‹åŒ–ï¼‰
+	public int T_pri = -1;  // ï¼ˆå·²å®Œæˆåˆå§‹åŒ–ï¼‰
+	public int finished_time_normal_car = -1;  // ï¼ˆå·²å®Œæˆåˆå§‹åŒ–ï¼‰
+	public int T = -1;  // ï¼ˆå·²å®Œæˆåˆå§‹åŒ–ï¼‰
 	
-	// ÆäËûinfo
-	public int time = 0;  // £¨ÒÑÍê³É³õÊ¼»¯£©
-	public Map<String, Integer> statistics_info = new HashMap<>();  // £¨ÒÑÍê³É³õÊ¼»¯£©
-	public int[] sorted_cross_id_list = null;  // £¨ÒÑÍê³É³õÊ¼»¯£©
-//	public int[] sorted_road_id_list = null;  // £¨ÒÑÍê³É³õÊ¼»¯£©
+	// å…¶ä»–info
+	public int time = 0;  // ï¼ˆå·²å®Œæˆåˆå§‹åŒ–ï¼‰
+	public Map<String, Integer> statistics_info = new HashMap<>();  // ï¼ˆå·²å®Œæˆåˆå§‹åŒ–ï¼‰
+	public int[] sorted_cross_id_list = null;  // ï¼ˆå·²å®Œæˆåˆå§‹åŒ–ï¼‰
+//	public int[] sorted_road_id_list = null;  // ï¼ˆå·²å®Œæˆåˆå§‹åŒ–ï¼‰
 	
 	// new info
 	public Graph g;
@@ -64,7 +64,7 @@ public class Scheduler {
 						if(car1.car_id < car2.car_id) {
 							return -1;
 						}else if(car1.car_id == car2.car_id) {
-							// System.out.println("²»¿ÉÄÜ£¬Äã´íÁË£¡£¡£¡£¡£¡£¡£¡");
+							System.out.println("ä¸å¯èƒ½ï¼Œä½ é”™äº†ï¼ï¼ï¼ï¼ï¼ï¼ï¼");
 						}else {
 							return 1;
 						}
@@ -74,7 +74,7 @@ public class Scheduler {
 				}else {
 					return 1;
 				}
-				// System.out.println("²»¿ÉÄÜ£¬Äã´íÁË£¡£¡£¡£¡£¡£¡£¡");
+				System.out.println("ä¸å¯èƒ½ï¼Œä½ é”™äº†ï¼ï¼ï¼ï¼ï¼ï¼ï¼");
 				return 0;
 			}
 		});
@@ -83,7 +83,7 @@ public class Scheduler {
 		this.priority_car_num = this.priority_car_list.size();
 		this.normal_car_num = this.all_car_num - this.priority_car_num;
 		
-		// º¯Êıµ÷ÓÃ
+		// å‡½æ•°è°ƒç”¨
 		this.init_statics_dict();
 		this.sort_cross_and_road();
 		
@@ -124,7 +124,7 @@ public class Scheduler {
 							if(car1.car_id < car2.car_id) {
 								return -1;
 							}else if(car1.car_id == car2.car_id) {
-								// System.out.println("²»¿ÉÄÜ£¬Äã´íÁË£¡£¡£¡£¡£¡£¡£¡");
+								System.out.println("ä¸å¯èƒ½ï¼Œä½ é”™äº†ï¼ï¼ï¼ï¼ï¼ï¼ï¼");
 							}else {
 								return 1;
 							}
@@ -134,7 +134,7 @@ public class Scheduler {
 					}else {
 						return 1;
 					}
-					// System.out.println("²»¿ÉÄÜ£¬Äã´íÁË£¡£¡£¡£¡£¡£¡£¡");
+					System.out.println("ä¸å¯èƒ½ï¼Œä½ é”™äº†ï¼ï¼ï¼ï¼ï¼ï¼ï¼");
 					return 0;
 				}
 			});
@@ -154,12 +154,12 @@ public class Scheduler {
 	}
 	
 	private void init_statics_dict() {
-		String info1 = "waiting_car_num";  // µÈ´ıÌ¬µÄ³µÁ¾×ÜÊı£¬ÓÃÓÚÅĞ¶ÏÂ·¿Úµ÷¶ÈÊÇ·ñ½áÊø (ÒÑÍê³É)
-		String info2 = "finish_car_num";  // µ±Ç°Ê±¿Ì£¬ÒÑ¾­µ½´ïÄ¿µÄµØµÄ³µÁ¾×ÜÊı (ÒÑÍê³É)
-		String info3 = "pre_finish_car_num";  // ÉÏÒ»Ê±¿ÌÒÑ¾­µ½´ïÄ¿µÄµØµÄ³µÁ¾×ÜÊı£¬ÓÃÓÚ¼ÆËãµ±Ç°Ê±¿Ìµ½´ïÄ¿µÄµØµÄ³µÊı
-		String info4 = "cur_time_finish_car_num";  // ¸ÃÊ±¿Ì´ïµ½Ä¿µÄµØµÄ³µÊıÁ¿£¬ÓÃÓÚ¿ØÖÆ·¢³µÁ¿ (ÒÑÍê³É)
-		String info5 = "running_car_num";  // µ±Ç°Ê±¿ÌÔÚµÀÂ·ÖĞÔËĞĞµÄ³µÁ¾×ÜÊı (ÒÑÍê³É)
-		String info6 = "cur_time_depart_car_num"; // (ÒÑÍê³É)
+		String info1 = "waiting_car_num";  // ç­‰å¾…æ€çš„è½¦è¾†æ€»æ•°ï¼Œç”¨äºåˆ¤æ–­è·¯å£è°ƒåº¦æ˜¯å¦ç»“æŸ (å·²å®Œæˆ)
+		String info2 = "finish_car_num";  // å½“å‰æ—¶åˆ»ï¼Œå·²ç»åˆ°è¾¾ç›®çš„åœ°çš„è½¦è¾†æ€»æ•° (å·²å®Œæˆ)
+		String info3 = "pre_finish_car_num";  // ä¸Šä¸€æ—¶åˆ»å·²ç»åˆ°è¾¾ç›®çš„åœ°çš„è½¦è¾†æ€»æ•°ï¼Œç”¨äºè®¡ç®—å½“å‰æ—¶åˆ»åˆ°è¾¾ç›®çš„åœ°çš„è½¦æ•°
+		String info4 = "cur_time_finish_car_num";  // è¯¥æ—¶åˆ»è¾¾åˆ°ç›®çš„åœ°çš„è½¦æ•°é‡ï¼Œç”¨äºæ§åˆ¶å‘è½¦é‡ (å·²å®Œæˆ)
+		String info5 = "running_car_num";  // å½“å‰æ—¶åˆ»åœ¨é“è·¯ä¸­è¿è¡Œçš„è½¦è¾†æ€»æ•° (å·²å®Œæˆ)
+		String info6 = "cur_time_depart_car_num"; // (å·²å®Œæˆ)
 
         this.statistics_info.put(info1, 0);
         this.statistics_info.put(info2, 0);
@@ -215,13 +215,13 @@ public class Scheduler {
 	}
 	
 	public void drive_just_current_road() {
-		//# µÚÒ»²½
-        //# ¶Ô¸÷¸öµÀÂ·½øĞĞ´¦Àí£¨±éÀúË³ĞòÎŞÒªÇó£©
+		//# ç¬¬ä¸€æ­¥
+        //# å¯¹å„ä¸ªé“è·¯è¿›è¡Œå¤„ç†ï¼ˆéå†é¡ºåºæ— è¦æ±‚ï¼‰
         Iterator<Map.Entry<Integer, Road>> iter1 = this.road_dict.entrySet().iterator();
 		while (iter1.hasNext()) {
 			Map.Entry<Integer, Road> entry = iter1.next();
 			Road road_obj = entry.getValue();
-			// # »ñÈ¡ÕâÌõµÀÂ·µÄchannelÊıÄ¿
+			// # è·å–è¿™æ¡é“è·¯çš„channelæ•°ç›®
             int channel_num = road_obj.road_channel;
             int road_length = road_obj.road_length;
             for(int channel=0; channel<channel_num; channel++) {
@@ -318,7 +318,7 @@ public class Scheduler {
 		                	return false;
 		                }
 					}
-				}else {// ÓÒ×ª
+				}else {// å³è½¬
 					conflict_road_id = cross.roads.get((cross.roads.indexOf(road.road_id)+1)%4);
 					if(conflict_road_id != -1) {
 						conflict_road = this.road_dict.get(conflict_road_id);
@@ -681,7 +681,7 @@ public class Scheduler {
         		}
         	}
         }
-        // System.out.println("²»¿ÉÄÜ½øÈëÕâÀï£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡");
+        System.out.println("ä¸å¯èƒ½è¿›å…¥è¿™é‡Œï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼");
         return false;
 	}
 	
@@ -770,14 +770,10 @@ public class Scheduler {
 						}
 						
 						if(this.move_to_next_road(car, road, dir, channel, position)) {
-							
 							this.update_cur_channel(road.get_road_matrix(dir), channel, road.road_length);
-							
 							this.create_car_sequeue(road, dir);
-							
 							road.run_car_in_init_list(this.car_dict, this.road_dict,
 									this.cross_dict, this.time, true, this.statistics_info, dir);
-							
 //							this.drive_car_init_list(true);
 						}else {
 							break label;
@@ -810,23 +806,25 @@ public class Scheduler {
 	}
 	
 	public void update_route_plan_of_first_priority_car() {
-		// 1¡¢¸üĞÂÍ¼µÄÈ¨ÖØ
+		// 1ã€æ›´æ–°å›¾çš„æƒé‡
 		g.update_real_time_cost();
 		
-		// 2¡¢¶ÔµÚÒ»ÓÅÏÈ¼¶µÄ³µ½øĞĞÖØĞÂ¹æ»®£¬¹æ»®ÍêÖ®ºóÒª¸üĞÂĞÅÏ¢£ºdir, next_road, next_road_speedµÈĞÅÏ¢
+		// 2ã€å¯¹ç¬¬ä¸€ä¼˜å…ˆçº§çš„è½¦è¿›è¡Œé‡æ–°è§„åˆ’ï¼Œè§„åˆ’å®Œä¹‹åè¦æ›´æ–°ä¿¡æ¯ï¼šdir, next_road, next_road_speedç­‰ä¿¡æ¯
 		Iterator<Map.Entry<Integer, Road>> iter1 = Main.road_dict.entrySet().iterator();
 		while (iter1.hasNext()) {
 			Map.Entry<Integer, Road> entry = iter1.next();
 			Road road = entry.getValue();
 			int[] first_priority_car;
 			for(int dir=0;dir<2;dir++) {
-				if(dir==0) {
-					first_priority_car = road.from_to_first_priority_car;
-				}else {
-					first_priority_car = road.to_from_first_priority_car;
-				}
+				
+				first_priority_car = road.get_car_from_sequeue(dir);
+				
 				if(first_priority_car[0]!=-1) {
 					Car car = this.car_dict.get(first_priority_car[0]);
+					
+					if(Main.preset_car_list.contains(car.car_id))
+						continue;
+					
 					if(car.cur_route_plan_index == car.route_plan.size()-1)
 						continue;
 					
@@ -857,12 +855,12 @@ public class Scheduler {
 //			        }
 			        
 			        
-			        // 3¡¢Â·¾¶µÄÊµÊ±¹æ»®
-//			        // System.out.println(car.route_plan);
+			        // 3ã€è·¯å¾„çš„å®æ—¶è§„åˆ’
+//			        System.out.println(car.route_plan);
 					g.real_time_update_path(car, cur_cross_id, other_cross_id, car.car_to);
-//					// System.out.println(car.route_plan);
+//					System.out.println(car.route_plan);
 					
-					// 4¡¢¸üĞÂdir, next_road, next_road_speed
+					// 4ã€æ›´æ–°dir, next_road, next_road_speed
 					car.next_road = car.route_plan.get(car.cur_route_plan_index+1);
 					car.next_road_speed = this.road_dict.get(car.next_road).road_speed;
 					car.dir = this.get_dir(car);
@@ -872,10 +870,10 @@ public class Scheduler {
 	}
 	
 	public void update_route_plan_of_cur_car(Car car, Road road) {
-		// 1¡¢¸üĞÂÍ¼µÄÈ¨ÖØ
+		// 1ã€æ›´æ–°å›¾çš„æƒé‡
 		g.update_real_time_cost();
 		
-		// 2¡¢³µ½øĞĞÖØĞÂ¹æ»®£¬¹æ»®ÍêÖ®ºóÒª¸üĞÂĞÅÏ¢£ºdir, next_road, next_road_speedµÈĞÅÏ¢
+		// 2ã€è½¦è¿›è¡Œé‡æ–°è§„åˆ’ï¼Œè§„åˆ’å®Œä¹‹åè¦æ›´æ–°ä¿¡æ¯ï¼šdir, next_road, next_road_speedç­‰ä¿¡æ¯
 		if(car.cur_route_plan_index == car.route_plan.size()-1)
 			return;
 			
@@ -883,7 +881,10 @@ public class Scheduler {
 			return;
 		}
 		car.has_real_time_plan = true;
-			
+		
+		if(Main.preset_car_list.contains(car.car_id))
+			return;
+		
 		Road next_road = this.road_dict.get(car.route_plan.get(car.cur_route_plan_index+1));
 		int cur_cross_id;
 		int other_cross_id;
@@ -896,20 +897,20 @@ public class Scheduler {
         	other_cross_id = road.road_from;
         }
 	        
-        int car_num_condition = 20;
-        if(cur_cross_id == next_road.road_from) {
-        	if(next_road.car_nums[0] < car_num_condition)
-        		return;
-        }else {
-        	if(next_road.car_nums[1] < car_num_condition)
-        		return;
-        }
+//        int car_num_condition = 20;
+//        if(cur_cross_id == next_road.road_from) {
+//        	if(next_road.car_nums[0] < car_num_condition)
+//        		return;
+//        }else {
+//        	if(next_road.car_nums[1] < car_num_condition)
+//        		return;
+//        }
 	        
 	        
-        // 3¡¢Â·¾¶µÄÊµÊ±¹æ»®
+        // 3ã€è·¯å¾„çš„å®æ—¶è§„åˆ’
 		g.real_time_update_path(car, cur_cross_id, other_cross_id, car.car_to);
 			
-		// 4¡¢¸üĞÂdir, next_road, next_road_speed
+		// 4ã€æ›´æ–°dir, next_road, next_road_speed
 		car.next_road = car.route_plan.get(car.cur_route_plan_index+1);
 		car.next_road_speed = this.road_dict.get(car.next_road).road_speed;
 		car.dir = this.get_dir(car);
@@ -918,28 +919,28 @@ public class Scheduler {
 	public void schedule() {
 		while(true) {
 			this.time++;
-			// ########################## Í³¼ÆĞÅÏ¢ ############################
+			// ########################## ç»Ÿè®¡ä¿¡æ¯ ############################
 			this.statistics_info.put("cur_time_finish_car_num", 0);
 			this.statistics_info.put("cur_time_depart_car_num", 0);
 			// ###############################################################
 			
 			this.drive_just_current_road();
 			this.drive_car_init_list(true);
-			this.create_car_sequeue(null, -1); // ´«Èënull±íÊ¾¶ÔËùÓĞ³µµÀ¶¼¸üĞÂ
+			this.create_car_sequeue(null, -1); // ä¼ å…¥nullè¡¨ç¤ºå¯¹æ‰€æœ‰è½¦é“éƒ½æ›´æ–°
 			
 			// real time route plan
 			this.update_route_plan_of_first_priority_car();
 			
 			if(!this.drive_car_in_wait_state()) {
-				// System.out.println("·¢ÉúÁËËÀËø£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡");
-				// System.out.println("ËÀËøµÄ³µÁ¾ÈçÏÂ£º");
+				System.out.println("å‘ç”Ÿäº†æ­»é”ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼");
+				System.out.println("æ­»é”çš„è½¦è¾†å¦‚ä¸‹ï¼š");
 				
 //				Iterator<Map.Entry<Integer, Car>> iter = this.car_dict.entrySet().iterator();
 //				while (iter.hasNext()) {
 //					Map.Entry<Integer, Car> entry = iter.next();
 //					Car car = entry.getValue();
 //					if(car.car_state==1) {
-//						// System.out.println(car);
+//						System.out.println(car);
 //					}
 //				}
 				return;
@@ -948,18 +949,18 @@ public class Scheduler {
 			this.drive_car_init_list(false);
 			
             if(this.T_pri == -1 && this.finished_priority_car_num == this.priority_car_num)
-//            	this.T_pri = this.time - this.priority_car_init_plan_time; //1¡¢´ıÊµÏÖ
+//            	this.T_pri = this.time - this.priority_car_init_plan_time; //1ã€å¾…å®ç°
             	this.T_pri = this.time - 1;
             if(this.finished_time_normal_car == -1 && this.finished_normal_car_num == this.normal_car_num)
             	this.finished_time_normal_car = this.time;
 			
-            // ----------------------------------- ´òÓ¡ĞÅÏ¢ --------------------------------------------
-            // System.out.println("----------------------------------------------------------------------------------");
-            // System.out.println("µ±Ç°ÏµÍ³µ÷¶ÈÊ±¼äÎª                     £º" + this.time);
-            // System.out.println("µ±Ç°Ê±¿ÌÒÑ¾­Íê³ÉµÄ³µÊıÁ¿Îª       £º" + this.statistics_info.get("finish_car_num"));
-            // System.out.println("¸ÃÊ±¼äÆ¬ÄÚÍê³ÉµÄ³µÁ¾ÊıÄ¿Îª       £º" + this.statistics_info.get("cur_time_finish_car_num"));
-            // System.out.println("µ±Ç°Ê±¼äÆ¬ÏµÍ³ÖĞÔËĞĞµÄ³µÁ¾ÊıÄ¿£º" + this.statistics_info.get("running_car_num"));
-            // System.out.println("µ±Ç°Ê±¿ÌµÄ·¢³µÊıÁ¿Îª                 £º" + this.statistics_info.get("cur_time_depart_car_num"));
+            // ----------------------------------- æ‰“å°ä¿¡æ¯ --------------------------------------------
+            System.out.println("----------------------------------------------------------------------------------");
+            System.out.println("å½“å‰ç³»ç»Ÿè°ƒåº¦æ—¶é—´ä¸º                     ï¼š" + this.time);
+            System.out.println("å½“å‰æ—¶åˆ»å·²ç»å®Œæˆçš„è½¦æ•°é‡ä¸º       ï¼š" + this.statistics_info.get("finish_car_num"));
+            System.out.println("è¯¥æ—¶é—´ç‰‡å†…å®Œæˆçš„è½¦è¾†æ•°ç›®ä¸º       ï¼š" + this.statistics_info.get("cur_time_finish_car_num"));
+            System.out.println("å½“å‰æ—¶é—´ç‰‡ç³»ç»Ÿä¸­è¿è¡Œçš„è½¦è¾†æ•°ç›®ï¼š" + this.statistics_info.get("running_car_num"));
+            System.out.println("å½“å‰æ—¶åˆ»çš„å‘è½¦æ•°é‡ä¸º                 ï¼š" + this.statistics_info.get("cur_time_depart_car_num"));
             // ----------------------------------------------------------------------------------------
             
             if(this.is_finish()){
@@ -968,17 +969,17 @@ public class Scheduler {
             }
 		}
 		
-		// System.out.println("ÏµÍ³µ÷¶ÈÍê³É£¡£¡£¡£¡");
-		// System.out.println("ÓÅÏÈ¼¶³µÁ¾µÄÍê³ÉÊ±¼äÎª    £º" + this.T_pri);
-		// System.out.println("Õû¸öÏµÍ³µÄÍê³ÉÊ±¼äÎª        £º" + this.T);
-		// System.out.println("¸ù¾İ¹«Ê½£¬Õû¸öÏµÍ³µÃ·ÖÎª £º");  // ´ıÍê³É
+		System.out.println("ç³»ç»Ÿè°ƒåº¦å®Œæˆï¼ï¼ï¼ï¼");
+		System.out.println("ä¼˜å…ˆçº§è½¦è¾†çš„å®Œæˆæ—¶é—´ä¸º    ï¼š" + this.T_pri);
+		System.out.println("æ•´ä¸ªç³»ç»Ÿçš„å®Œæˆæ—¶é—´ä¸º        ï¼š" + this.T);
+		System.out.println("æ ¹æ®å…¬å¼ï¼Œæ•´ä¸ªç³»ç»Ÿå¾—åˆ†ä¸º ï¼š");  // å¾…å®Œæˆ
 		
 		Iterator<Map.Entry<Integer, Car>> iter = this.car_dict.entrySet().iterator();
 		while (iter.hasNext()) {
 			Map.Entry<Integer, Car> entry = iter.next();
 			Car car = entry.getValue();
 			if(car.car_state != 3) {
-				// System.out.println(car);
+				System.out.println(car);
 			}
 		}
 	}

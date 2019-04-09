@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /** 
-* @author Ğ¡Â¯×Ó 863956237@qq.com: 
-* @version ´´½¨Ê±¼ä£º2019Äê4ÔÂ5ÈÕ ÉÏÎç10:41:41 
-* ÀàËµÃ÷ 
+* @author å°ç‚‰å­ 863956237@qq.com: 
+* @version åˆ›å»ºæ—¶é—´ï¼š2019å¹´4æœˆ5æ—¥ ä¸Šåˆ10:41:41 
+* ç±»è¯´æ˜ 
 */
 public class Cross {
 	public int cross_id;

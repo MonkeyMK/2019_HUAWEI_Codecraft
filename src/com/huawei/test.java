@@ -82,7 +82,7 @@ public class test {
 //			e.get(from).add(new Edge(to,cost));
 //		}
 //		
-//		long startTime=System.currentTimeMillis();   //获取开始时间
+//		long startTime=System.currentTimeMillis();   //锟斤拷取锟斤拷始时锟斤拷
 //		
 //		dijkstra(s);
 //		int first = 0;
@@ -100,7 +100,7 @@ public class test {
 //	    	dest = path[dest];
 //	    }
 //	    
-//	    long endTime=System.currentTimeMillis(); //获取结束时间
-//        System.out.println("程序运行时间： "+(endTime-startTime)+"ms");
+//	    long endTime=System.currentTimeMillis(); //锟斤拷取锟斤拷锟斤拷时锟斤拷
+//        System.out.println("锟斤拷锟斤拷锟斤拷锟斤拷时锟戒： "+(endTime-startTime)+"ms");
 	 }
 }

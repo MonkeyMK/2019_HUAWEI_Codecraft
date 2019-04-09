@@ -33,13 +33,13 @@ class Edge implements Comparable<Edge>{
 }
 
 public class Graph {
-	// ½Úµã¸öÊı
+	// èŠ‚ç‚¹ä¸ªæ•°
 	public int cross_num = Main.cross_dict.size();
 	// cross id to array index
 	public Map<Integer, Integer> id_to_index = new HashMap<>();
 	// array index to cross id
 	public int[] index_to_id = new int[cross_num];
-	// ´æ·Åstart_endµÄroad id
+	// å­˜æ”¾start_endçš„road id
 	public Map<String, Integer> node_road = new HashMap<>();
 	
 	public boolean[] vis = new boolean[cross_num];
@@ -47,39 +47,39 @@ public class Graph {
 	public int[] path = new int[cross_num];
 	public Queue<Edge> que= new PriorityQueue<>();
 	
-	// ´æ·ÅËùÓĞ±ßµÄÊı×é£¬³¤¶ÈµÈÓÚcrossµÄ¸öÊı£¬Ã¿¸öcross×î¶àËÄÌõ±ß
+	// å­˜æ”¾æ‰€æœ‰è¾¹çš„æ•°ç»„ï¼Œé•¿åº¦ç­‰äºcrossçš„ä¸ªæ•°ï¼Œæ¯ä¸ªcrossæœ€å¤šå››æ¡è¾¹
 	public List<Map<Integer, Edge>> edges = new ArrayList<>();
 	
 	public Graph() {
-		// 1¡¢±éÀúcross_dict£¬½¨Á¢Ë÷ÒıºÍidµÄ¹ØÏµ
+		// 1ã€éå†cross_dictï¼Œå»ºç«‹ç´¢å¼•å’Œidçš„å…³ç³»
 		Iterator<Map.Entry<Integer, Cross>> iter = Main.cross_dict.entrySet().iterator();
 		int i=0;
 		while (iter.hasNext()) {
 			Map.Entry<Integer, Cross> entry = iter.next();
 			int cross_id = entry.getKey();
-			index_to_id[i] = cross_id; // Í¨¹ıË÷ÒıÕÒcrossµÄid
-			id_to_index.put(cross_id, i); // Í¨¹ıcrossµÄidÕÒÊı×éË÷Òı
+			index_to_id[i] = cross_id; // é€šè¿‡ç´¢å¼•æ‰¾crossçš„id
+			id_to_index.put(cross_id, i); // é€šè¿‡crossçš„idæ‰¾æ•°ç»„ç´¢å¼•
 			
 			edges.add(new HashMap<>());
 			i++;
 		}
 		
-		// 2¡¢±éÀúroad£¬½¨Á¢edges£¬¼´Õû¸öÍ¼£¬ºóÆÚÖ»ĞèÒª¸ü¸ÄµÀÂ·µÄcost
+		// 2ã€éå†roadï¼Œå»ºç«‹edgesï¼Œå³æ•´ä¸ªå›¾ï¼ŒåæœŸåªéœ€è¦æ›´æ”¹é“è·¯çš„cost
 		Iterator<Map.Entry<Integer, Road>> iter1 = Main.road_dict.entrySet().iterator();
 		while (iter1.hasNext()) {
 			Map.Entry<Integer, Road> entry = iter1.next();
 			Road road = entry.getValue();
-			int start = road.road_from; // ÆğÊ¼µãcrossµÄid
+			int start = road.road_from; // èµ·å§‹ç‚¹crossçš„id
 			int start_index = this.id_to_index.get(start);
-			int end = road.road_to; // ÖÕÖ¹µãcrossµÄid
+			int end = road.road_to; // ç»ˆæ­¢ç‚¹crossçš„id
 			int end_index = this.id_to_index.get(end);
 			
-			// a. from_to·½Ïò
+			// a. from_toæ–¹å‘
 			String route1 = road.road_from + "_" + road.road_to;
 			this.node_road.put(route1, road.road_id);
 			edges.get(start_index).put(end_index, new Edge(end_index, road.road_length));
 			
-			// b. to_from·½Ïò
+			// b. to_fromæ–¹å‘
 			if(road.road_isDuplex == 1) {
 				String route2 = road.road_to + "_" + road.road_from;
 				this.node_road.put(route2, road.road_id);
@@ -87,7 +87,7 @@ public class Graph {
 			}
 		}
 		
-		// °²ÅÅ³õÊ¼Â·¾¶
+		// å®‰æ’åˆå§‹è·¯å¾„
 		this.init_car_route_plan();
 		
 	}
@@ -110,13 +110,13 @@ public class Graph {
 	}
 	
 	public void init_car_route_plan() {
-		// 1¡¢Ô¤ÖÃ³µÁ¾µÄÂ·¾¶½øĞĞÈ¨ÖµÀÛ¼Ó
+		// 1ã€é¢„ç½®è½¦è¾†çš„è·¯å¾„è¿›è¡Œæƒå€¼ç´¯åŠ 
 		for(int i=0;i<Main.preset_car_list.size();i++) {
 			Car car = Main.car_dict.get(Main.preset_car_list.get(i));
 			this.cost_accumulation(car.route_plan, car.car_from);
 		}
 		
-		// 2¡¢¹æ»®ÆäËû³µµÄÂ·¾¶
+		// 2ã€è§„åˆ’å…¶ä»–è½¦çš„è·¯å¾„
 		int start_index;
 		int end_index;
 		Iterator<Map.Entry<Integer, Car>> iter = Main.car_dict.entrySet().iterator();
@@ -131,7 +131,7 @@ public class Graph {
 				
 				this.cost_accumulation(car.route_plan, car.car_from);
 				
-				car.car_actual_time = (car.car_id-10000)%8000 + car.car_plan_time;
+				car.car_actual_time = (car.car_id-10000)%2500 + car.car_plan_time;
 			}
 		}
 	}
@@ -139,7 +139,7 @@ public class Graph {
 	
 	
 	public void dijkstra(int start_index, int end_index) {
-		// 1¡¢³õÊ¼»¯
+		// 1ã€åˆå§‹åŒ–
 		for(int i=0;i<cross_num;i++) {
 			vis[i] = false;
 			dis[i] = 1000000000;
@@ -194,10 +194,10 @@ public class Graph {
 	
 	public void real_time_update_path(Car car, int cur_cross_id, int other_cross_id, int end_id) {
 		
-		// 1¡¢½«»ØÍ·Â·¸ÄÎªÎŞÇî´ó
+		// 1ã€å°†å›å¤´è·¯æ”¹ä¸ºæ— ç©·å¤§
 		int cur_cross_index = this.id_to_index.get(cur_cross_id);
 		int other_cross_index = this.id_to_index.get(other_cross_id);
-		// ±£ÁôoldÖµ£¬×îºóĞèÒª»¹Ô­£¨²»Í¬³µµÄ»ØÍ·Â·²»Ò»Ñù£©
+		// ä¿ç•™oldå€¼ï¼Œæœ€åéœ€è¦è¿˜åŸï¼ˆä¸åŒè½¦çš„å›å¤´è·¯ä¸ä¸€æ ·ï¼‰
 		int old_cost = -1;
 		if(this.edges.get(cur_cross_index).containsKey(other_cross_index)) {
 			old_cost = this.edges.get(cur_cross_index).get(other_cross_index).cost;
@@ -205,24 +205,23 @@ public class Graph {
 		}
 		
 		
-		// 2¡¢¹æ»®ĞÂµÄÂ·¾¶
+		// 2ã€è§„åˆ’æ–°çš„è·¯å¾„
 		int end_index = this.id_to_index.get(end_id);
 		this.dijkstra(cur_cross_index, end_index);
 		List<Integer> new_route_plan = this.generate_route_plan(end_index);
 		
-		// 3¡¢¸üĞÂ³µÁ¾µÄÂ·¾¶route_plan
-		// dir, next_road, next_road_speedµÈĞÅÏ¢ÔÚscheduleÀï¸üĞÂ
+		// 3ã€æ›´æ–°è½¦è¾†çš„è·¯å¾„route_plan
+		// dir, next_road, next_road_speedç­‰ä¿¡æ¯åœ¨scheduleé‡Œæ›´æ–°
 		if(new_route_plan.size()!=0) {
 			car.route_plan = car.route_plan.subList(0, car.cur_route_plan_index+1);
 			car.route_plan.addAll(new_route_plan);
 		}
 
 		
-		// 4¡¢»¹Ô­»ØÍ·Â·µÄÎŞÇî´ó
+		// 4ã€è¿˜åŸå›å¤´è·¯çš„æ— ç©·å¤§
 		if(this.edges.get(cur_cross_index).containsKey(other_cross_index)) {
 			this.edges.get(cur_cross_index).get(other_cross_index).cost = old_cost;
 		}
-		
 	}
 	
 	public void update_real_time_cost() {
@@ -231,12 +230,12 @@ public class Graph {
 		while (iter1.hasNext()) {
 			Map.Entry<Integer, Road> entry = iter1.next();
 			Road road = entry.getValue();
-			int start = road.road_from; // ÆğÊ¼µãcrossµÄid
+			int start = road.road_from; // èµ·å§‹ç‚¹crossçš„id
 			int start_index = this.id_to_index.get(start);
-			int end = road.road_to; // ÖÕÖ¹µãcrossµÄid
+			int end = road.road_to; // ç»ˆæ­¢ç‚¹crossçš„id
 			int end_index = this.id_to_index.get(end);
 			
-			// a. from_to·½Ïò
+			// a. from_toæ–¹å‘
 //			int t1 = edges.get(start_index).get(end_index).cost;
 			edges.get(start_index).get(end_index).cost = this.dis_compute(road, 0);
 //			int t2 = edges.get(start_index).get(end_index).cost;
@@ -244,9 +243,8 @@ public class Graph {
 //				System.out.println(t1);
 //				System.out.println(t2);
 //			}
-				
 			
-			// b. to_from·½Ïò
+			// b. to_fromæ–¹å‘
 			if(road.road_isDuplex == 1) {
 				edges.get(end_index).get(start_index).cost = this.dis_compute(road, 1);
 			}

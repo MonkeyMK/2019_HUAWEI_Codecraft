@@ -17,7 +17,7 @@ public class Main {
 	public static ArrayList<Integer> priority_car_list = new ArrayList<>();
 	public static ArrayList<Integer> preset_car_list = new ArrayList<>();
 	
-	// 1¡¢½¨Á¢car_dict£» Ê×ÏÈ½¨Á¢Car¶ÔÏó£¬È»ºóput½øcar_dict
+	// 1ã€å»ºç«‹car_dictï¼› é¦–å…ˆå»ºç«‹Carå¯¹è±¡ï¼Œç„¶åputè¿›car_dict
 	public static void create_car_dict(String carPath) throws NumberFormatException, IOException {
 		FileReader carFile = new FileReader(carPath);
 		String carLine;
@@ -35,15 +35,15 @@ public class Main {
 					newCarLine[i] = newCarLine[i].replaceAll(" ","");
 					intCarLine [i] = Integer.parseInt(newCarLine[i]);
 				}
-				// intCarLine: 0-id£¬5-priority£¬6-preset
+				// intCarLine: 0-idï¼Œ5-priorityï¼Œ6-preset
 				Car car = new Car(intCarLine[0],intCarLine[1],intCarLine[2],
 						intCarLine[3],intCarLine[4],intCarLine[5],intCarLine[6]);
 				Main.car_dict.put(intCarLine[0], car);
-				// ÓÅÏÈ¼¶³µ
+				// ä¼˜å…ˆçº§è½¦
 				if(intCarLine[5] == 1) {
 					Main.priority_car_list.add(intCarLine[0]);
 				}
-				// Ô¤ÖÃ³µÁ¾
+				// é¢„ç½®è½¦è¾†
 				if(intCarLine[6] == 1) {
 					Main.preset_car_list.add(intCarLine[0]);
 				}
@@ -127,7 +127,6 @@ public class Main {
 					route_plan.add(Integer.parseInt(newpresetCarLine[i]));
 				}
 				car.route_plan = route_plan;
-//				System.out.println(car);
         	}
 		}
 	}
@@ -185,7 +184,7 @@ public class Main {
 	
     public static void main(String[] args) throws IOException
     {	
-    	long startTime=System.currentTimeMillis();   //»ñÈ¡¿ªÊ¼Ê±¼ä
+    	long startTime=System.currentTimeMillis();   //è·å–å¼€å§‹æ—¶é—´
     	
         if (args.length != 5) {
             return;
@@ -196,27 +195,25 @@ public class Main {
         String presetAnswerPath = args[3];
         String answerPath = args[4];
 
-        // 1¡¢½¨Á¢×Öµä¶ÔÏó£¬ºÍlist¶ÔÏó£¨ÓÅÏÈ³µ£¬Ô¤ÖÃ³µ£©
+        // 1ã€å»ºç«‹å­—å…¸å¯¹è±¡ï¼Œå’Œlistå¯¹è±¡ï¼ˆä¼˜å…ˆè½¦ï¼Œé¢„ç½®è½¦ï¼‰
         create_car_dict(carPath);
         create_road_dict(roadPath);
         create_cross_dict(crossPath);
         arrange_preset_data(presetAnswerPath);
-//        read_answer(answerPath);  // ¶Á´ğ°¸£¬½«pathºÍtime°²ÅÅÉÏ
+//        read_answer(answerPath);  // è¯»ç­”æ¡ˆï¼Œå°†pathå’Œtimeå®‰æ’ä¸Š
         
         
-        // 2¡¢½¨Á¢µ÷¶ÈÆ÷¶ÔÏó£¬²¢µ÷¶È
+        // 2ã€å»ºç«‹è°ƒåº¦å™¨å¯¹è±¡ï¼Œå¹¶è°ƒåº¦
         Scheduler scheduler = new Scheduler(Main.car_dict, Main.road_dict, 
         		Main.cross_dict, Main.priority_car_list, Main.preset_car_list);
         scheduler.schedule();
-//        System.out.println(scheduler);
-        
 
-        // 3¡¢TODO: write answer.txt
+        // 3ã€TODO: write answer.txt
         write_answer(answerPath);
         
         
-        long endTime=System.currentTimeMillis(); //»ñÈ¡½áÊøÊ±¼ä
-        System.out.println("³ÌĞòÔËĞĞÊ±¼ä£º "+(endTime-startTime)+"ms");
+        long endTime=System.currentTimeMillis(); //è·å–ç»“æŸæ—¶é—´
+        System.out.println("ç¨‹åºè¿è¡Œæ—¶é—´ï¼š "+(endTime-startTime)+"ms");
     }
     
 }
