@@ -131,7 +131,7 @@ public class Graph {
 				
 				this.cost_accumulation(car.route_plan, car.car_from);
 				
-				car.car_actual_time = (car.car_id-10000)%2500 + car.car_plan_time;
+				car.car_actual_time = (car.car_id-10000)%8000 + car.car_plan_time;
 			}
 		}
 	}
@@ -263,7 +263,7 @@ public class Graph {
 	
 	public int dis_compute(Road road, int dir) {
 		return road.road_length + 
-				(int)Math.exp((road.car_nums[dir]+0.0)/road.amount_all_position * 20)*10 + 
+				(int)Math.exp((road.car_nums[dir]+0.0)/road.amount_all_position * 20) + 
 				10/(road.road_channel*road.road_channel);
 	}
 	
