@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -33,6 +34,9 @@ class Edge implements Comparable<Edge>{
 }
 
 public class Graph {
+	public int N = 41;
+	public int clear_num = 100;
+	
 	// 节点个数
 	public int cross_num = Main.cross_dict.size();
 	// cross id to array index
@@ -58,7 +62,8 @@ public class Graph {
 		this.build_graph();
 		
 		// 3、安排初始路径
-		this.init_car_route_plan();
+//		this.init_car_route_plan();
+		this.set_car_actual_time_and_route_plan();
 		
 	}
 	
@@ -144,6 +149,145 @@ public class Graph {
 				
 				// 随机安排发车时间
 //				car.car_actual_time = (car.car_id-10000)%1500 + car.car_plan_time;
+			}
+		}
+	}
+	
+	private void set_car_actual_time_and_route_plan() {
+		List<Integer> priority_cars = new LinkedList<>();
+		List<Integer> normal_cars = new LinkedList<>();
+		// time: 数量
+		Map<Integer, Integer> preset_car_time = new HashMap<>();
+		
+		Iterator<Map.Entry<Integer, Car>> iter = Main.car_dict.entrySet().iterator();
+		while (iter.hasNext()) {
+			Map.Entry<Integer, Car> entry = iter.next();
+			Car car = entry.getValue();
+			if(car.is_priority == 1 && car.is_preset == 0) {
+				priority_cars.add(car.car_id);
+			}
+			if(car.is_priority == 0 && car.is_preset == 0) {
+				normal_cars.add(car.car_id);
+			}
+			if(car.is_preset == 1) {
+				if(preset_car_time.containsKey(car.car_actual_time)) {
+					preset_car_time.put(car.car_actual_time, preset_car_time.get(car.car_actual_time)+1);
+				}else {
+					preset_car_time.put(car.car_actual_time, 1);
+				}
+			}
+		}
+//		Collections.sort(priority_cars, new Comparator<Integer>() {
+//			@Override
+//			public int compare(Integer o1, Integer o2) {
+//				if(Main.car_dict.get(o1).car_max_speed > Main.car_dict.get(o2).car_max_speed)
+//					return 1;
+//				else if(Main.car_dict.get(o1).car_max_speed < Main.car_dict.get(o2).car_max_speed)
+//					return -1;
+//				else
+//					return 0;
+//			}
+//		});
+//		Collections.sort(normal_cars, new Comparator<Integer>() {
+//			@Override
+//			public int compare(Integer o1, Integer o2) {
+//				if(Main.car_dict.get(o1).car_max_speed > Main.car_dict.get(o2).car_max_speed)
+//					return 1;
+//				else if(Main.car_dict.get(o1).car_max_speed < Main.car_dict.get(o2).car_max_speed)
+//					return -1;
+//				else
+//					return 0;
+//			}
+//		});
+		
+		int time = 0;
+		int start_index;
+		int end_index;
+		Car car;
+		while(!normal_cars.isEmpty()) {
+			time++;
+			if(time % this.clear_num == 0) { // 每隔一段时间对路径回归原来的权重（去累加效应）
+				Iterator<Map.Entry<Integer, Road>> iter1 = Main.road_dict.entrySet().iterator();
+				while (iter1.hasNext()) {
+					Map.Entry<Integer, Road> entry = iter1.next();
+					Road road = entry.getValue();
+					int start = road.road_from; // 起始点cross的id
+					int start_index1 = this.id_to_index.get(start);
+					int end = road.road_to; // 终止点cross的id
+					int end_index1 = this.id_to_index.get(end);
+					
+					// a. from_to方向
+					edges.get(start_index1).get(end_index1).cost = road.road_length;
+					
+					// b. to_from方向
+					if(road.road_isDuplex == 1) {
+						edges.get(end_index1).get(start_index1).cost = road.road_length;
+					}
+				}
+			}
+			
+			int N = this.N;
+			if(preset_car_time.containsKey(time)) {
+				N -= preset_car_time.get(time);
+			}
+			if(N<=0)
+				continue;
+			boolean flag = false;
+			
+			if(!priority_cars.isEmpty()) {
+				Iterator<Integer> pri_iter = priority_cars.iterator();
+				while(pri_iter.hasNext()) {
+					int car_id = pri_iter.next();
+					if(Main.car_dict.get(car_id).car_plan_time<=time) {
+						
+						// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+						// 对car_id 进行路径规划
+						car = Main.car_dict.get(car_id);
+						start_index = this.id_to_index.get(car.car_from);
+						end_index = this.id_to_index.get(car.car_to);
+						this.dijkstra(start_index, end_index);
+						car.route_plan = this.generate_route_plan(end_index);
+						// 权值累加函数
+						this.cost_accumulation(car.route_plan, car.car_from);
+						// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+						
+						pri_iter.remove();
+						car.car_actual_time = time;
+						N--;
+						if(N==0){
+							flag = true;
+							break;
+						}
+					}
+				}
+				if(flag) {
+					continue;
+				}
+			}
+			
+			Iterator<Integer> nor_iter = normal_cars.iterator();
+			while(nor_iter.hasNext()) {
+				int car_id = nor_iter.next();
+				if(Main.car_dict.get(car_id).car_plan_time<=time) {
+					
+					// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+					// 对car_id 进行路径规划
+					car = Main.car_dict.get(car_id);
+					start_index = this.id_to_index.get(car.car_from);
+					end_index = this.id_to_index.get(car.car_to);
+					this.dijkstra(start_index, end_index);
+					car.route_plan = this.generate_route_plan(end_index);
+					// 权值累加函数
+					this.cost_accumulation(car.route_plan, car.car_from);
+					// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+					
+					nor_iter.remove();
+					Main.car_dict.get(car_id).car_actual_time = time;
+					N--;
+					if(N==0){
+						break;
+					}
+				}
 			}
 		}
 	}
@@ -272,9 +416,24 @@ public class Graph {
 	}
 	
 	public int dis_compute(Road road, int dir) {
-		return road.road_length + 
-				(int)Math.exp((road.car_nums[dir]+0.0)/road.amount_all_position * 10) + 
-				10/(road.road_channel*road.road_channel);
+		int length = road.road_length;
+		int degree_of_crowding;
+		int channel_punish;
+		
+		if(((road.car_nums[dir]+0.0)/road.amount_all_position) < 0.3) {
+			degree_of_crowding = 0;
+		}else {
+			degree_of_crowding = (int)Math.exp(((road.car_nums[dir]+0.0)/road.amount_all_position) * 10);
+		}
+		
+		if(road.road_channel < 3) {
+			channel_punish = (3 - road.road_channel) * length;
+		}else {
+			channel_punish = 0;
+		}
+//		channel_punish = 10 / (road.road_channel * road.road_channel);
+		
+		return length + degree_of_crowding + channel_punish;
 	}
 	
 	

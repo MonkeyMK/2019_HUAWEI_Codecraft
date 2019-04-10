@@ -15,7 +15,7 @@ import java.util.Map;
 * 类说明 
 */
 public class Scheduler {
-	public int N = 26;
+	public int N = 60;
 	
 	public Map<Integer, Car> car_dict = null;  // （已完成初始化）
 	public Map<Integer, Road> road_dict = null;  // （已完成初始化）
@@ -68,6 +68,7 @@ public class Scheduler {
 							return -1;
 						}else if(car1.car_id == car2.car_id) {
 							// System.out.println("不可能，你错了！！！！！！！");
+							return 0;
 						}else {
 							return 1;
 						}
@@ -77,8 +78,6 @@ public class Scheduler {
 				}else {
 					return 1;
 				}
-				// System.out.println("不可能，你错了！！！！！！！");
-				return 0;
 			}
 		});
 		
@@ -93,7 +92,7 @@ public class Scheduler {
 		// new info
 		g = new Graph();
 		this.arrange_cars_by_road();
-		this.set_car_actual_time();
+//		this.set_car_actual_time();
 		
 	}
 	
@@ -121,28 +120,28 @@ public class Scheduler {
 				}
 			}
 		}
-		Collections.sort(priority_cars, new Comparator<Integer>() {
-			@Override
-			public int compare(Integer o1, Integer o2) {
-				if(Main.car_dict.get(o1).car_max_speed > Main.car_dict.get(o2).car_max_speed)
-					return 1;
-				else if(Main.car_dict.get(o1).car_max_speed < Main.car_dict.get(o2).car_max_speed)
-					return -1;
-				else
-					return 0;
-			}
-		});
-		Collections.sort(normal_cars, new Comparator<Integer>() {
-			@Override
-			public int compare(Integer o1, Integer o2) {
-				if(Main.car_dict.get(o1).car_max_speed > Main.car_dict.get(o2).car_max_speed)
-					return 1;
-				else if(Main.car_dict.get(o1).car_max_speed < Main.car_dict.get(o2).car_max_speed)
-					return -1;
-				else
-					return 0;
-			}
-		});
+//		Collections.sort(priority_cars, new Comparator<Integer>() {
+//			@Override
+//			public int compare(Integer o1, Integer o2) {
+//				if(Main.car_dict.get(o1).car_max_speed > Main.car_dict.get(o2).car_max_speed)
+//					return 1;
+//				else if(Main.car_dict.get(o1).car_max_speed < Main.car_dict.get(o2).car_max_speed)
+//					return -1;
+//				else
+//					return 0;
+//			}
+//		});
+//		Collections.sort(normal_cars, new Comparator<Integer>() {
+//			@Override
+//			public int compare(Integer o1, Integer o2) {
+//				if(Main.car_dict.get(o1).car_max_speed > Main.car_dict.get(o2).car_max_speed)
+//					return 1;
+//				else if(Main.car_dict.get(o1).car_max_speed < Main.car_dict.get(o2).car_max_speed)
+//					return -1;
+//				else
+//					return 0;
+//			}
+//		});
 		
 		int time = 0;
 		while(!normal_cars.isEmpty()) {
@@ -222,6 +221,7 @@ public class Scheduler {
 								return -1;
 							}else if(car1.car_id == car2.car_id) {
 								// System.out.println("不可能，你错了！！！！！！！");
+								return 0;
 							}else {
 								return 1;
 							}
@@ -231,8 +231,6 @@ public class Scheduler {
 					}else {
 						return 1;
 					}
-					// System.out.println("不可能，你错了！！！！！！！");
-					return 0;
 				}
 			});
 		}
@@ -1106,12 +1104,29 @@ public class Scheduler {
 				// System.out.println("发生了死锁！！！！！！！！！！！！！！！！！！！！！");
 				// System.out.println("死锁的车辆如下：");
 				
+				List<Integer> jam_roads = new ArrayList<>();
 				Iterator<Map.Entry<Integer, Car>> iter = this.car_dict.entrySet().iterator();
 				while (iter.hasNext()) {
 					Map.Entry<Integer, Car> entry = iter.next();
 					Car car = entry.getValue();
+					
 					if(car.car_state==1) {
-						// System.out.println(car);
+						
+						Road road = this.road_dict.get(car.route_plan.get(car.cur_route_plan_index));
+						if(jam_roads.contains(road.road_id)) {
+							continue;
+						}else {
+							jam_roads.add(road.road_id);
+						}
+						// System.out.println("------------------------------------------------------------------");
+						// System.out.println(road.road_id);
+						// System.out.println("对于 " + road.road_from + " 到 " + road.road_to + " 方向，拥堵程度为：");
+						// System.out.println((road.car_nums[0]+0.0)/road.amount_all_position);
+						
+						if(road.road_isDuplex == 1) {
+							// System.out.println("对于 " + road.road_to + " 到 " + road.road_from + " 方向，拥堵程度为：");
+							// System.out.println((road.car_nums[1]+0.0)/road.amount_all_position);
+						}
 					}
 				}
 				return;
