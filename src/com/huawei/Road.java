@@ -72,7 +72,7 @@ public class Road {
 
 
 
-	public int get_dir(Car cur_car,Map<Integer, Road> road_dict, Map<Integer, Cross> cross_dict) {
+	public int get_dir(Car cur_car, Map<Integer, Road> road_dict, Map<Integer, Cross> cross_dict) {
 		int next_road_id = cur_car.next_road;
         Road next_road = road_dict.get(next_road_id);
         int cross_id;
@@ -124,6 +124,7 @@ public class Road {
         }
         int channel;
         for(channel=0; channel<this.road_channel; channel++) {
+        	
         	if(cur_road_matrix.get(channel).size()==0) {
         		cur_road_matrix.get(channel).add(car);
                 car.cur_position = car.cur_speed - 1;
@@ -134,6 +135,7 @@ public class Road {
                 statistics_info.put("cur_time_depart_car_num", statistics_info.get("cur_time_depart_car_num")+1);
                 return true;
         	}
+        	
         	Car front_car = cur_road_matrix.get(channel).get(0);
         	if(front_car.cur_position == 0) {
         		if(front_car.car_state == 1)

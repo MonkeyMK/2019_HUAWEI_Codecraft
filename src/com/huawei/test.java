@@ -58,6 +58,20 @@ public class test {
 	} 
 	 
 	public static void main(String args[]) {
+		ArrayList<Integer> a = new ArrayList<>();
+		a.add(5);
+		a.add(-1);
+		a.add(2);
+		a.add(8);
+		ArrayList<Integer> b = (ArrayList<Integer>) a.clone();
+		for(int i=0;i<b.size();i++) {
+			int x = b.get(i);
+			if(x == 5 || x==-1) {
+				a.remove((Integer)x);
+			}
+		}
+		System.out.println(a);
+		System.out.println(b);
 		
 //		int dis = (int)Math.exp((45+0.0)/45 * 20);
 //		System.out.println(dis);

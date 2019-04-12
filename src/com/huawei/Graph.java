@@ -11,31 +11,32 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-class Edge implements Comparable<Edge>{
-	int to;
-	int cost;
-	Edge(int to_,int cost_){
-		to = to_;
-		cost = cost_;
-	}
-	
-	@Override
-	public int compareTo(Edge o) {
-		// TODO Auto-generated method stub
-		return this.cost - o.cost;
-	}
 
-	@Override
-	public String toString() {
-		return "Edge [to=" + to + ", cost=" + cost + "]";
-	}
-	
-	
-}
 
 public class Graph {
-	public int N = 41;
+	public int N = 40;
 	public int clear_num = 100;
+	
+	public int dis_compute(Road road, int dir) {
+		int length = road.road_length;
+		int degree_of_crowding;
+		int channel_punish;
+		
+		if(((road.car_nums[dir]+0.0)/road.amount_all_position) < 0.3) {
+			degree_of_crowding = 0;
+		}else {
+			degree_of_crowding = (int)Math.exp(((road.car_nums[dir]+0.0)/road.amount_all_position) * 10);
+		}
+		
+		if(road.road_channel < 3) {
+			channel_punish = (3 - road.road_channel) * length;
+		}else {
+			channel_punish = 0;
+		}
+//		channel_punish = 10 / (road.road_channel * road.road_channel);
+		
+		return length + degree_of_crowding + channel_punish;
+	}
 	
 	// 节点个数
 	public int cross_num = Main.cross_dict.size();
@@ -146,9 +147,13 @@ public class Graph {
 				car.route_plan = this.generate_route_plan(end_index);
 				// 权值累加函数
 				this.cost_accumulation(car.route_plan, car.car_from);
+				if(car.is_priority==1) {
+					car.car_actual_time = (car.car_id-10000)%300 + car.car_plan_time;
+					continue;
+				}
 				
 				// 随机安排发车时间
-//				car.car_actual_time = (car.car_id-10000)%1500 + car.car_plan_time;
+				car.car_actual_time = (car.car_id-10000)%1200 + car.car_plan_time + 300;
 			}
 		}
 	}
@@ -177,28 +182,6 @@ public class Graph {
 				}
 			}
 		}
-//		Collections.sort(priority_cars, new Comparator<Integer>() {
-//			@Override
-//			public int compare(Integer o1, Integer o2) {
-//				if(Main.car_dict.get(o1).car_max_speed > Main.car_dict.get(o2).car_max_speed)
-//					return 1;
-//				else if(Main.car_dict.get(o1).car_max_speed < Main.car_dict.get(o2).car_max_speed)
-//					return -1;
-//				else
-//					return 0;
-//			}
-//		});
-//		Collections.sort(normal_cars, new Comparator<Integer>() {
-//			@Override
-//			public int compare(Integer o1, Integer o2) {
-//				if(Main.car_dict.get(o1).car_max_speed > Main.car_dict.get(o2).car_max_speed)
-//					return 1;
-//				else if(Main.car_dict.get(o1).car_max_speed < Main.car_dict.get(o2).car_max_speed)
-//					return -1;
-//				else
-//					return 0;
-//			}
-//		});
 		
 		int time = 0;
 		int start_index;
@@ -369,7 +352,9 @@ public class Graph {
 		// 3、更新车辆的路径route_plan
 		// dir, next_road, next_road_speed等信息在schedule里更新
 		if(new_route_plan.size()!=0) {
-			car.route_plan = car.route_plan.subList(0, car.cur_route_plan_index+1);
+//			car.route_plan = car.route_plan.subList(0, car.cur_route_plan_index+1);
+//			car.route_plan.addAll(new_route_plan);
+			car.route_plan.subList(car.cur_route_plan_index+1, car.route_plan.size()).clear();;
 			car.route_plan.addAll(new_route_plan);
 		}
 
@@ -392,13 +377,7 @@ public class Graph {
 			int end_index = this.id_to_index.get(end);
 			
 			// a. from_to方向
-//			int t1 = edges.get(start_index).get(end_index).cost;
 			edges.get(start_index).get(end_index).cost = this.dis_compute(road, 0);
-//			int t2 = edges.get(start_index).get(end_index).cost;
-//			if(t1!=t2) {
-//				System.out.println(t1);
-//				System.out.println(t2);
-//			}
 			
 			// b. to_from方向
 			if(road.road_isDuplex == 1) {
@@ -415,34 +394,28 @@ public class Graph {
 				+ Arrays.toString(dis) + ", path=" + Arrays.toString(path) + ", que=" + que + "]";
 	}
 	
-	public int dis_compute(Road road, int dir) {
-		int length = road.road_length;
-		int degree_of_crowding;
-		int channel_punish;
-		
-		if(((road.car_nums[dir]+0.0)/road.amount_all_position) < 0.3) {
-			degree_of_crowding = 0;
-		}else {
-			degree_of_crowding = (int)Math.exp(((road.car_nums[dir]+0.0)/road.amount_all_position) * 10);
-		}
-		
-		if(road.road_channel < 3) {
-			channel_punish = (3 - road.road_channel) * length;
-		}else {
-			channel_punish = 0;
-		}
-//		channel_punish = 10 / (road.road_channel * road.road_channel);
-		
-		return length + degree_of_crowding + channel_punish;
-	}
-	
-	
 }
 
 
+class Edge implements Comparable<Edge>{
+	int to;
+	int cost;
+	Edge(int to_,int cost_){
+		to = to_;
+		cost = cost_;
+	}
+	
+	@Override
+	public int compareTo(Edge o) {
+		// TODO Auto-generated method stub
+		return this.cost - o.cost;
+	}
 
-
-
+	@Override
+	public String toString() {
+		return "Edge [to=" + to + ", cost=" + cost + "]";
+	}
+}
 
 
 
