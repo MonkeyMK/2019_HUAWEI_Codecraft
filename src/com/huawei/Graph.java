@@ -15,15 +15,15 @@ import java.util.Queue;
 
 
 public class Graph {
-	public int N = 40;
-	public int clear_num = 100;
+	public int N = Parameter.p_N;
+	public int clear_num = Parameter.p_clear_num;
 	
 	public int dis_compute(Road road, int dir) {
 		int length = road.road_length;
 		int degree_of_crowding;
 		int channel_punish;
 		
-		if(((road.car_nums[dir]+0.0)/road.amount_all_position) < 0.3) {
+		if(((road.car_nums[dir]+0.0)/road.amount_all_position) < Parameter.p_min_degree_of_crowding) {
 			degree_of_crowding = 0;
 		}else {
 			degree_of_crowding = (int)Math.exp(((road.car_nums[dir]+0.0)/road.amount_all_position) * 10);

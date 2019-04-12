@@ -202,6 +202,7 @@ public class Main {
         
         
         // 2、建立调度器对象，并调度
+        Parameter.set_parameter();
         Scheduler scheduler = new Scheduler(Main.car_dict, Main.road_dict, 
         		Main.cross_dict, Main.priority_car_list, Main.preset_car_list);
         scheduler.schedule();
