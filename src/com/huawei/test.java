@@ -28,34 +28,34 @@ public class test {
 	static int dis[];
 	static int path[];
 	
-	static ArrayList< ArrayList<Edge> > e;
+//	static ArrayList< ArrayList<Edge> > e;
 	
-	public static void dijkstra(int s) {
-		int vis[] = new int[maxn];
-		path = new int[maxn];
-		dis = new int[maxn];
-		for(int i = 0 ; i < maxn ; i++) dis[i] = 2147483647;
-		Queue<Edge> que= new PriorityQueue<>();
-		que.add(new Edge(s, 0));
-		dis[s] = 0;
-		path[s] = -1;
-		while(que.isEmpty() == false) {
-			Edge now = que.poll();
-			int u = now.to;
-			if(dis[u] < now.cost)continue;
-			if(vis[u] == 1)continue;
-			vis[u] = 1;
-			for(int i = 0; i < e.get(u).size() ; i++) {
-				int next = e.get(u).get(i).to;
-				int cost = e.get(u).get(i).cost;
-				if(vis[next] == 0 && dis[next] > dis[u] + cost) {
-					dis[next] = dis[u] + cost;
-					path[next] = u;
-					que.add(new Edge(next,dis[next]));
-				}
-			}
-		}
-	} 
+//	public static void dijkstra(int s) {
+//		int vis[] = new int[maxn];
+//		path = new int[maxn];
+//		dis = new int[maxn];
+//		for(int i = 0 ; i < maxn ; i++) dis[i] = 2147483647;
+//		Queue<Edge> que= new PriorityQueue<>();
+//		que.add(new Edge(s, 0));
+//		dis[s] = 0;
+//		path[s] = -1;
+//		while(que.isEmpty() == false) {
+//			Edge now = que.poll();
+//			int u = now.to;
+//			if(dis[u] < now.cost)continue;
+//			if(vis[u] == 1)continue;
+//			vis[u] = 1;
+//			for(int i = 0; i < e.get(u).size() ; i++) {
+//				int next = e.get(u).get(i).to;
+//				int cost = e.get(u).get(i).cost;
+//				if(vis[next] == 0 && dis[next] > dis[u] + cost) {
+//					dis[next] = dis[u] + cost;
+//					path[next] = u;
+//					que.add(new Edge(next,dis[next]));
+//				}
+//			}
+//		}
+//	} 
 	 
 	public static void main(String args[]) {
 		ArrayList<Integer> a = new ArrayList<>();
@@ -63,15 +63,8 @@ public class test {
 		a.add(-1);
 		a.add(2);
 		a.add(8);
-		ArrayList<Integer> b = (ArrayList<Integer>) a.clone();
-		for(int i=0;i<b.size();i++) {
-			int x = b.get(i);
-			if(x == 5 || x==-1) {
-				a.remove((Integer)x);
-			}
-		}
+		a.add(0, 55);
 		System.out.println(a);
-		System.out.println(b);
 		
 //		int dis = (int)Math.exp((45+0.0)/45 * 20);
 //		System.out.println(dis);

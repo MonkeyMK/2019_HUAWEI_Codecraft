@@ -1055,6 +1055,14 @@ public class Scheduler {
             System.out.println("当前时刻的发车数量为                 ：" + this.statistics_info.get("cur_time_depart_car_num"));
             // ----------------------------------------------------------------------------------------
             
+//            Iterator<Map.Entry<Integer, Road>> iter1 = this.road_dict.entrySet().iterator();
+//    		while (iter1.hasNext()) {
+//    			Map.Entry<Integer, Road> entry = iter1.next();
+//    			Road road_obj = entry.getValue();
+//    			System.out.print(":" + road_obj.car_nums[0] + "-" + road_obj.car_nums[1]);
+//    		}
+//    		System.out.println("+++++");
+            
             if(this.is_finish()){
             	this.T = this.time;
                 break;

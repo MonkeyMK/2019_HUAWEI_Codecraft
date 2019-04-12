@@ -3,6 +3,7 @@ package com.huawei;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -158,12 +159,27 @@ public class Graph {
 		}
 	}
 	
-	private void set_car_actual_time_and_route_plan() {
-		List<Integer> priority_cars = new LinkedList<>();
-		List<Integer> normal_cars = new LinkedList<>();
-		// time: 数量
-		Map<Integer, Integer> preset_car_time = new HashMap<>();
-		
+	private void clear_cost() {
+		Iterator<Map.Entry<Integer, Road>> iter1 = Main.road_dict.entrySet().iterator();
+		while (iter1.hasNext()) {
+			Map.Entry<Integer, Road> entry = iter1.next();
+			Road road = entry.getValue();
+			int start = road.road_from; // 起始点cross的id
+			int start_index1 = this.id_to_index.get(start);
+			int end = road.road_to; // 终止点cross的id
+			int end_index1 = this.id_to_index.get(end);
+			
+			// a. from_to方向
+			edges.get(start_index1).get(end_index1).cost = road.road_length;
+			
+			// b. to_from方向
+			if(road.road_isDuplex == 1) {
+				edges.get(end_index1).get(start_index1).cost = road.road_length;
+			}
+		}
+	}
+	
+	private void average_plan(List<Integer> priority_cars, List<Integer> normal_cars, Map<Integer, Integer> preset_car_time) {
 		Iterator<Map.Entry<Integer, Car>> iter = Main.car_dict.entrySet().iterator();
 		while (iter.hasNext()) {
 			Map.Entry<Integer, Car> entry = iter.next();
@@ -182,6 +198,13 @@ public class Graph {
 				}
 			}
 		}
+	}
+	
+	private void set_car_actual_time_and_route_plan() {
+		List<Integer> priority_cars = new LinkedList<>();
+		List<Integer> normal_cars = new LinkedList<>();
+		Map<Integer, Integer> preset_car_time = new HashMap<>(); // time: 数量
+		this.average_plan(priority_cars, normal_cars, preset_car_time); // 初始化上面三个变量
 		
 		int time = 0;
 		int start_index;
@@ -190,23 +213,7 @@ public class Graph {
 		while(!normal_cars.isEmpty()) {
 			time++;
 			if(time % this.clear_num == 0) { // 每隔一段时间对路径回归原来的权重（去累加效应）
-				Iterator<Map.Entry<Integer, Road>> iter1 = Main.road_dict.entrySet().iterator();
-				while (iter1.hasNext()) {
-					Map.Entry<Integer, Road> entry = iter1.next();
-					Road road = entry.getValue();
-					int start = road.road_from; // 起始点cross的id
-					int start_index1 = this.id_to_index.get(start);
-					int end = road.road_to; // 终止点cross的id
-					int end_index1 = this.id_to_index.get(end);
-					
-					// a. from_to方向
-					edges.get(start_index1).get(end_index1).cost = road.road_length;
-					
-					// b. to_from方向
-					if(road.road_isDuplex == 1) {
-						edges.get(end_index1).get(start_index1).cost = road.road_length;
-					}
-				}
+				this.clear_cost();
 			}
 			
 			int N = this.N;
