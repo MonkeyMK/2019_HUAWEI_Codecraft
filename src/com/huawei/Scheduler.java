@@ -543,6 +543,18 @@ public class Scheduler {
         else
             return 1;
 	}
+	
+	public boolean is_jam(ArrayList<LinkedList<Car>> next_road_matrix) {
+		for(int i=0;i<next_road_matrix.size();i++) {
+			if(next_road_matrix.get(i).size() == 0)
+				return false;
+			
+			Car car = next_road_matrix.get(i).get(0);
+			if(car.car_state != 2 || car.cur_position !=0)
+				return false;
+		}
+		return true;
+	}
         
 	
 	public boolean move_to_next_road(Car cur_car, Road cur_road, int dir, int channel, int position) {
@@ -576,19 +588,46 @@ public class Scheduler {
         next_road_matrix = this.get_other_road_matrix(cur_road, next_road);
         next_road_actual_speed = Math.min(next_road.road_speed, cur_car.car_max_speed);
         
-        if(next_road_actual_speed - (cur_road.road_length - cur_car.cur_position - 1) <= 0) {
-            cur_car.cur_position = cur_road.road_length - 1;
+        if(this.is_jam(next_road_matrix) || (next_road_actual_speed - (cur_road.road_length - cur_car.cur_position - 1) <= 0)) {
+        	cur_car.cur_position = cur_road.road_length - 1;
             cur_car.car_state = 2;
             this.statistics_info.put("waiting_car_num", this.statistics_info.get("waiting_car_num")-1);
             return true;
-        }else {
-        	int next_channel_num = next_road.road_channel;
-        	for(int next_road_channel=0;next_road_channel<next_channel_num;next_road_channel++) {
-        		if(next_road_matrix.get(next_road_channel).size()==0) {
+        }
+        
+        for(int next_channal=0;next_channal<next_road_matrix.size();next_channal++) {
+        	if(next_road_matrix.get(next_channal).size() == 0) {
+        		cur_car = cur_road_matrix.get(channel).pollLast();
+                next_road_matrix.get(next_channal).add(0, cur_car);
+                cur_car.cur_position = next_road_actual_speed - (cur_road.road_length - cur_car.cur_position -1) - 1;
+                cur_car.cur_channel = next_channal;
+                cur_car.car_state = 2;
+                this.statistics_info.put("waiting_car_num", this.statistics_info.get("waiting_car_num")-1);
+                cur_car.cur_speed = next_road_actual_speed;
+                cur_car.cur_route_plan_index += 1;
+                if((((cur_car.cur_route_plan_index) == (cur_car.route_plan.size() - 1)))) {
+                	cur_car.dir = 0;
+                    cur_car.next_road = -1;
+                    cur_car.next_road_speed = -1;
+                }else {
+                	cur_car.next_road = cur_car.route_plan.get(cur_car.cur_route_plan_index + 1);
+                    cur_car.next_road_speed = this.road_dict.get(cur_car.next_road).road_speed;
+                    cur_car.dir = this.get_dir(cur_car);
+                }
+                
+                cur_road.car_nums[dir]--;
+                int next_road_dir = this.get_next_road_dir(cur_road, next_road);
+                next_road.car_nums[next_road_dir]++;
+                
+                cur_car.has_real_time_plan = false;
+                return true;
+        	}else {
+        		Car front_car = next_road_matrix.get(next_channal).get(0);
+        		if(next_road_actual_speed - (cur_road.road_length - cur_car.cur_position - 1) <= front_car.cur_position) {
         			cur_car = cur_road_matrix.get(channel).pollLast();
-                    next_road_matrix.get(next_road_channel).add(0, cur_car);
-                    cur_car.cur_position = next_road_actual_speed - (cur_road.road_length - cur_car.cur_position -1) - 1;
-                    cur_car.cur_channel = next_road_channel;
+                    next_road_matrix.get(next_channal).add(0, cur_car);
+                    cur_car.cur_position = next_road_actual_speed - cur_road.road_length + cur_car.cur_position;
+                    cur_car.cur_channel = next_channal;
                     cur_car.car_state = 2;
                     this.statistics_info.put("waiting_car_num", this.statistics_info.get("waiting_car_num")-1);
                     cur_car.cur_speed = next_road_actual_speed;
@@ -608,79 +647,45 @@ public class Scheduler {
                     next_road.car_nums[next_road_dir]++;
                     
                     cur_car.has_real_time_plan = false;
+                    
                     return true;
         		}else {
-        			Car front_car = next_road_matrix.get(next_road_channel).get(0);
-        			if(front_car.cur_position == 0 && front_car.car_state == 2) {
-        				if(next_road_channel == next_channel_num - 1) {
-        					cur_car.cur_position = cur_road.road_length - 1;
+        			if(front_car.cur_position==0 && front_car.car_state==2) {
+        				continue;
+        			}else {
+        				if(front_car.cur_position!=0 && front_car.car_state==2) {
+        					cur_car = cur_road_matrix.get(channel).pollLast();
+                            next_road_matrix.get(next_channal).add(0, cur_car);
+                            cur_car.cur_position = front_car.cur_position - 1;
+                            cur_car.cur_channel = next_channal;
                             cur_car.car_state = 2;
                             this.statistics_info.put("waiting_car_num", this.statistics_info.get("waiting_car_num")-1);
+                            cur_car.cur_speed = next_road_actual_speed;
+                            cur_car.cur_route_plan_index += 1;
+                            if((((cur_car.cur_route_plan_index) == (cur_car.route_plan.size() - 1)))) {
+                            	cur_car.dir = 0;
+                                cur_car.next_road = -1;
+                                cur_car.next_road_speed = -1;
+                            }else {
+                            	cur_car.next_road = cur_car.route_plan.get(cur_car.cur_route_plan_index + 1);
+                                cur_car.next_road_speed = this.road_dict.get(cur_car.next_road).road_speed;
+                                cur_car.dir = this.get_dir(cur_car);
+                            }
+                            
+                            cur_road.car_nums[dir]--;
+                            int next_road_dir = this.get_next_road_dir(cur_road, next_road);
+                            next_road.car_nums[next_road_dir]++;
+                            
+                            cur_car.has_real_time_plan = false;
+                            
                             return true;
         				}else {
-        					continue;
+        					return false;
         				}
-        			}else if(front_car.cur_position == 0 && front_car.car_state == 1) {
-        				return false;
-        			}else if(next_road_actual_speed - (cur_road.road_length - cur_car.cur_position - 1) <= front_car.cur_position) {
-        				cur_car = cur_road_matrix.get(channel).pollLast();
-                        next_road_matrix.get(next_road_channel).add(0, cur_car);
-                        cur_car.cur_position = next_road_actual_speed - cur_road.road_length + cur_car.cur_position;
-                        cur_car.cur_channel = next_road_channel;
-                        cur_car.car_state = 2;
-                        this.statistics_info.put("waiting_car_num", this.statistics_info.get("waiting_car_num")-1);
-                        cur_car.cur_speed = next_road_actual_speed;
-                        cur_car.cur_route_plan_index += 1;
-                        if((((cur_car.cur_route_plan_index) == (cur_car.route_plan.size() - 1)))) {
-                        	cur_car.dir = 0;
-                            cur_car.next_road = -1;
-                            cur_car.next_road_speed = -1;
-                        }else {
-                        	cur_car.next_road = cur_car.route_plan.get(cur_car.cur_route_plan_index + 1);
-                            cur_car.next_road_speed = this.road_dict.get(cur_car.next_road).road_speed;
-                            cur_car.dir = this.get_dir(cur_car);
-                        }
-                        
-                        cur_road.car_nums[dir]--;
-                        int next_road_dir = this.get_next_road_dir(cur_road, next_road);
-                        next_road.car_nums[next_road_dir]++;
-                        
-                        cur_car.has_real_time_plan = false;
-                        
-                        return true;
-        			}else if(front_car.car_state == 2) {
-        				cur_car = cur_road_matrix.get(channel).pollLast();
-                        next_road_matrix.get(next_road_channel).add(0, cur_car);
-                        cur_car.cur_position = front_car.cur_position - 1;
-                        cur_car.cur_channel = next_road_channel;
-                        cur_car.car_state = 2;
-                        this.statistics_info.put("waiting_car_num", this.statistics_info.get("waiting_car_num")-1);
-                        cur_car.cur_speed = next_road_actual_speed;
-                        cur_car.cur_route_plan_index += 1;
-                        if((((cur_car.cur_route_plan_index) == (cur_car.route_plan.size() - 1)))) {
-                        	cur_car.dir = 0;
-                            cur_car.next_road = -1;
-                            cur_car.next_road_speed = -1;
-                        }else {
-                        	cur_car.next_road = cur_car.route_plan.get(cur_car.cur_route_plan_index + 1);
-                            cur_car.next_road_speed = this.road_dict.get(cur_car.next_road).road_speed;
-                            cur_car.dir = this.get_dir(cur_car);
-                        }
-                        
-                        cur_road.car_nums[dir]--;
-                        int next_road_dir = this.get_next_road_dir(cur_road, next_road);
-                        next_road.car_nums[next_road_dir]++;
-                        
-                        cur_car.has_real_time_plan = false;
-                        
-                        return true;
-        			}else {
-        				return false;
         			}
         		}
         	}
         }
-        System.out.println("不可能进入这里！！！！！！！！！！！！！");
         return false;
 	}
 	

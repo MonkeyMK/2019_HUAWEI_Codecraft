@@ -22,10 +22,10 @@ public class Parameter {
 			Parameter.p_clear_num = 100;
 			Parameter.p_min_degree_of_crowding = 0.3;
 			
-			Parameter.p_base = 42;
+			Parameter.p_base = 43;
 			Parameter.p_k = 0.3;
 			Parameter.p_NA = 5500;
-			Parameter.p_NMAX = 45;
+			Parameter.p_NMAX = 46;
 			
 		}else {
 			// 地图二的参数
