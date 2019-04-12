@@ -30,13 +30,15 @@ public class Graph {
 		}
 		
 		if(road.road_channel < 3) {
-			channel_punish = (3 - road.road_channel) * length;
+			channel_punish = (3 - road.road_channel) * length/3;
 		}else {
 			channel_punish = 0;
 		}
 //		channel_punish = 10 / (road.road_channel * road.road_channel);
-		
-		return length + degree_of_crowding + channel_punish;
+//		if((road.car_nums[dir]+0.0)/road.amount_all_position > 0.7)
+//			return 1000000;
+//		else
+			return length + degree_of_crowding + channel_punish;
 	}
 	
 	// 节点个数
@@ -48,6 +50,8 @@ public class Graph {
 	// 存放start_end的road id
 	public Map<String, Integer> node_road = new HashMap<>();
 	
+	public int[] sorted_cross_id_list = null;
+	
 	public boolean[] vis = new boolean[cross_num];
 	public int[] dis = new int[cross_num];
 	public int[] path = new int[cross_num];
@@ -57,6 +61,8 @@ public class Graph {
 	public List<Map<Integer, Edge>> edges = new ArrayList<>();
 	
 	public Graph() {
+		this.sort_cross();
+		
 		// 1、遍历cross_dict，建立索引和id的关系
 		this.create_id_and_index_relation();
 		
@@ -65,23 +71,31 @@ public class Graph {
 		
 		// 3、安排初始路径
 //		this.init_car_route_plan();
-		this.set_car_actual_time_and_route_plan();
+//		this.set_car_actual_time_and_route_plan();
 		
+	}
+	
+	private void sort_cross() {
+		ArrayList<Integer> sorted_cross_id_list = new ArrayList<Integer>(Main.cross_dict.keySet());
+		
+		Collections.sort(sorted_cross_id_list);
+		
+		this.sorted_cross_id_list = new int[sorted_cross_id_list.size()];
+		for(int i=0;i<sorted_cross_id_list.size();i++) {
+			this.sorted_cross_id_list[i] = sorted_cross_id_list.get(i);
+		}
 	}
 	
 	public void create_id_and_index_relation() {
 		// 1、遍历cross_dict，建立索引和id的关系
-		Iterator<Map.Entry<Integer, Cross>> iter = Main.cross_dict.entrySet().iterator();
-		int i=0;
-		while (iter.hasNext()) {
-			Map.Entry<Integer, Cross> entry = iter.next();
-			int cross_id = entry.getKey();
+		for(int i=0;i<this.sorted_cross_id_list.length;i++) {
+			int cross_id = this.sorted_cross_id_list[i];
 			index_to_id[i] = cross_id; // 通过索引找cross的id
 			id_to_index.put(cross_id, i); // 通过cross的id找数组索引
 			
 			edges.add(new HashMap<>());
-			i++;
 		}
+		
 	}
 	
 	public void build_graph() {

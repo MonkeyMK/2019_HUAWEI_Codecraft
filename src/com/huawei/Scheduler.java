@@ -14,6 +14,50 @@ import java.util.Map;
 * @version 创建时间：2019年4月5日 下午12:39:11 
 * 类说明 
 */
+
+class my_sort implements Comparator<Integer>{
+	@Override
+	public int compare(Integer o1, Integer o2) {
+		Car car1 = Main.car_dict.get(o1);
+		Car car2 = Main.car_dict.get(o2);
+		
+		if(car1.is_priority > car2.is_priority) {
+			return -1;
+		}else if(car1.is_priority == car2.is_priority) {
+			if(car1.car_actual_time < car2.car_actual_time) {
+				return -1;
+			}else if(car1.car_actual_time == car2.car_actual_time) {
+				if(car1.car_id < car2.car_id) {
+					return -1;
+				}else if(car1.car_id == car2.car_id) {
+					System.out.println("不可能，你错了！！！！！！！");
+					return 0;
+				}else {
+					return 1;
+				}
+			}else {
+				return 1;
+			}
+		}else {
+			return 1;
+		}
+	}
+}
+
+class id_sort implements Comparator<Integer>{
+	@Override
+	public int compare(Integer o1, Integer o2) {
+		Car car1 = Main.car_dict.get(o1);
+		Car car2 = Main.car_dict.get(o2);
+		
+		if(car1.car_id > car2.car_id) {
+			return 1;
+		}else {
+			return -1;
+		}
+	}
+}
+
 public class Scheduler {
 	public Map<Integer, Car> car_dict = null;  // （已完成初始化）
 	public Map<Integer, Road> road_dict = null;  // （已完成初始化）
@@ -40,6 +84,11 @@ public class Scheduler {
 	// new info
 	public Graph g;
 	
+	List<Integer> priority_cars = new LinkedList<>();
+	List<Integer> normal_cars = new LinkedList<>();
+	Map<Integer, Integer> preset_car_time = new HashMap<>(); // time: 数量
+	
+	
 	
 	public Scheduler(Map<Integer, Car> car_dict, Map<Integer, Road> road_dict, Map<Integer, Cross> cross_dict,
 			ArrayList<Integer> priority_car_list, ArrayList<Integer> preset_car_list) {
@@ -49,34 +98,7 @@ public class Scheduler {
 		this.cross_dict = cross_dict;
 		this.priority_car_list = priority_car_list;
 		this.preset_car_list = preset_car_list;
-		this.preset_car_list.sort(new Comparator<Integer>() {
-			@Override
-			public int compare(Integer o1, Integer o2) {
-				Car car1 = Main.car_dict.get(o1);
-				Car car2 = Main.car_dict.get(o2);
-				
-				if(car1.is_priority > car2.is_priority) {
-					return -1;
-				}else if(car1.is_priority == car2.is_priority) {
-					if(car1.car_actual_time < car2.car_actual_time) {
-						return -1;
-					}else if(car1.car_actual_time == car2.car_actual_time) {
-						if(car1.car_id < car2.car_id) {
-							return -1;
-						}else if(car1.car_id == car2.car_id) {
-							System.out.println("不可能，你错了！！！！！！！");
-							return 0;
-						}else {
-							return 1;
-						}
-					}else {
-						return 1;
-					}
-				}else {
-					return 1;
-				}
-			}
-		});
+		this.preset_car_list.sort(new my_sort());
 		
 		this.all_car_num = this.car_dict.size();
 		this.priority_car_num = this.priority_car_list.size();
@@ -89,6 +111,7 @@ public class Scheduler {
 		// new info
 		g = new Graph();
 		this.arrange_cars_by_road();
+		this.average_plan(); 
 	}
 	
 	
@@ -98,6 +121,11 @@ public class Scheduler {
 			Map.Entry<Integer, Car> entry = iter.next();
 			int car_id = entry.getKey();
 			Car car = entry.getValue();
+			
+			if(car.is_preset == 0) {
+				continue;
+			}
+			
 			int road_id = car.route_plan.get(0);
 			Road road = this.road_dict.get(road_id);
 			road.init_list.add(car_id);
@@ -108,34 +136,7 @@ public class Scheduler {
 			Map.Entry<Integer, Road> entry = iter1.next();
 			Road road = entry.getValue();
 			
-			Collections.sort(road.init_list, new Comparator<Integer>() {
-				@Override
-				public int compare(Integer o1, Integer o2) {
-					Car car1 = Main.car_dict.get(o1);
-					Car car2 = Main.car_dict.get(o2);
-					
-					if(car1.is_priority > car2.is_priority) {
-						return -1;
-					}else if(car1.is_priority == car2.is_priority) {
-						if(car1.car_actual_time < car2.car_actual_time) {
-							return -1;
-						}else if(car1.car_actual_time == car2.car_actual_time) {
-							if(car1.car_id < car2.car_id) {
-								return -1;
-							}else if(car1.car_id == car2.car_id) {
-								System.out.println("不可能，你错了！！！！！！！");
-								return 0;
-							}else {
-								return 1;
-							}
-						}else {
-							return 1;
-						}
-					}else {
-						return 1;
-					}
-				}
-			});
+			Collections.sort(road.init_list, new my_sort());
 		}
 		
 	}
@@ -747,7 +748,6 @@ public class Scheduler {
 			for(int m=0;m<this.sorted_cross_id_list.length;m++) {
 				cross_id = this.sorted_cross_id_list[m];
 				cross = this.cross_dict.get(cross_id);
-				
 				for(int k=0;k<cross.sorted_roads.length;k++) {
 					road_id = cross.sorted_roads[k];
 					
@@ -992,6 +992,159 @@ public class Scheduler {
 		return final_score;
 	}
 	
+	private int get_depature_num() {
+		int car_N = (int)(Parameter.p_base - Parameter.p_k * (this.statistics_info.get("running_car_num") - Parameter.p_NA));
+		return Math.min(car_N, Parameter.p_NMAX);
+	}
+	
+	private void average_plan() {
+		Iterator<Map.Entry<Integer, Car>> iter = Main.car_dict.entrySet().iterator();
+		while (iter.hasNext()) {
+			Map.Entry<Integer, Car> entry = iter.next();
+			Car car = entry.getValue();
+			if(car.is_priority == 1 && car.is_preset == 0) {
+				priority_cars.add(car.car_id);
+			}
+			if(car.is_priority == 0 && car.is_preset == 0) {
+				normal_cars.add(car.car_id);
+			}
+			if(car.is_preset == 1) {
+				if(preset_car_time.containsKey(car.car_actual_time)) {
+					preset_car_time.put(car.car_actual_time, preset_car_time.get(car.car_actual_time)+1);
+				}else {
+					preset_car_time.put(car.car_actual_time, 1);
+				}
+			}
+		}
+		
+		Collections.sort(priority_cars, new id_sort());
+		Collections.sort(normal_cars, new id_sort());
+//		Collections.shuffle(priority_cars);
+//		Collections.shuffle(normal_cars);
+	}
+	
+	private void cost_accumulation(int road_id, int start) {
+		int start_index = start;
+		int end_index;
+		Road road;
+		road = Main.road_dict.get(road_id);
+		if(road.road_from == start_index) {
+			end_index = road.road_to;
+		}else {
+			end_index = road.road_from;
+		}
+		g.edges.get(g.id_to_index.get(start_index)).get(g.id_to_index.get(end_index)).cost += 15;
+	}
+	
+	public void select_car(List<Integer> selected_car_list, int car_num) {
+		int start_index;
+		int end_index;
+		Car car;
+		boolean flag = false;
+		
+		if(!priority_cars.isEmpty()) {
+			Iterator<Integer> pri_iter = priority_cars.iterator();
+			while(pri_iter.hasNext()) {
+				int car_id = pri_iter.next();
+				if(Main.car_dict.get(car_id).car_plan_time<=this.time) {
+					
+					// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+					// 对car_id 进行路径规划
+					car = Main.car_dict.get(car_id);
+					start_index = g.id_to_index.get(car.car_from);
+					end_index = g.id_to_index.get(car.car_to);
+					g.dijkstra(start_index, end_index);
+					car.route_plan = g.generate_route_plan(end_index);
+					// 权值累加函数
+//					this.cost_accumulation(car.route_plan.get(0), car.car_from);
+					// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+					
+					selected_car_list.add(car_id);
+					
+					pri_iter.remove();
+					car.car_actual_time = time;
+					car_num--;
+					if(car_num==0){
+						flag = true;
+						break;
+					}
+				}
+			}
+			if(flag)return;
+		}
+		
+		Iterator<Integer> nor_iter = normal_cars.iterator();
+		while(nor_iter.hasNext()) {
+			int car_id = nor_iter.next();
+			if(Main.car_dict.get(car_id).car_plan_time<=time) {
+				
+				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				// 对car_id 进行路径规划
+				car = Main.car_dict.get(car_id);
+				start_index = g.id_to_index.get(car.car_from);
+				end_index = g.id_to_index.get(car.car_to);
+				g.dijkstra(start_index, end_index);
+				car.route_plan = g.generate_route_plan(end_index);
+				// 权值累加函数
+//				this.cost_accumulation(car.route_plan.get(0), car.car_from);
+				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				
+				selected_car_list.add(car_id);
+				
+				nor_iter.remove();
+				car.car_actual_time = time;
+				car_num--;
+				if(car_num==0){
+					return;
+				}
+			}
+		}
+		return;
+	}
+	
+	private void put_car(List<Integer> selected_car_list) {
+		for(int i=0;i<selected_car_list.size();i++) {
+			
+			int car_id = selected_car_list.get(i);
+			Car car = Main.car_dict.get(car_id);
+//			car.car_actual_time = this.time;
+			
+			int road_id = car.route_plan.get(0);
+			Road road = this.road_dict.get(road_id);
+			road.init_list.add(car_id);
+		}
+		
+		Iterator<Map.Entry<Integer, Road>> iter1 = this.road_dict.entrySet().iterator();
+		while (iter1.hasNext()) {
+			Map.Entry<Integer, Road> entry = iter1.next();
+			Road road = entry.getValue();
+			Collections.sort(road.init_list, new my_sort());
+		}
+	}
+	
+	public void real_time_depature_car() {
+		// 0、更新道路权重
+		g.update_real_time_cost();
+		
+		// 1、获取发车数量
+		int cur_N = this.get_depature_num();
+		if(preset_car_time.containsKey(this.time)) {
+			cur_N -= preset_car_time.get(this.time);
+		}
+		if(cur_N <= 0) return; // 不发其他车
+		
+		// 2、选车 + 规划
+		List<Integer> selected_car_list = new ArrayList<>();
+		this.select_car(selected_car_list, cur_N);
+		
+		if(selected_car_list.size() == 0)
+			return;
+		
+		// 3、放入对应道路的init车库，并排序
+		this.put_car(selected_car_list);
+		
+	}
+	
 	public void schedule() {
 		while(true) {
 			this.time++;
@@ -999,6 +1152,8 @@ public class Scheduler {
 			this.statistics_info.put("cur_time_finish_car_num", 0);
 			this.statistics_info.put("cur_time_depart_car_num", 0);
 			// ###############################################################
+			
+			this.real_time_depature_car();
 			
 			this.drive_just_current_road();
 			this.drive_car_init_list(true);
@@ -1054,14 +1209,6 @@ public class Scheduler {
             System.out.println("当前时间片系统中运行的车辆数目：" + this.statistics_info.get("running_car_num"));
             System.out.println("当前时刻的发车数量为                 ：" + this.statistics_info.get("cur_time_depart_car_num"));
             // ----------------------------------------------------------------------------------------
-            
-//            Iterator<Map.Entry<Integer, Road>> iter1 = this.road_dict.entrySet().iterator();
-//    		while (iter1.hasNext()) {
-//    			Map.Entry<Integer, Road> entry = iter1.next();
-//    			Road road_obj = entry.getValue();
-//    			System.out.print(":" + road_obj.car_nums[0] + "-" + road_obj.car_nums[1]);
-//    		}
-//    		System.out.println("+++++");
             
             if(this.is_finish()){
             	this.T = this.time;

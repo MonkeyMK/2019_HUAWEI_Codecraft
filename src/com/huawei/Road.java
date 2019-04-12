@@ -7,6 +7,7 @@ package com.huawei;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -108,7 +109,7 @@ public class Road {
             cur_road_matrix = this.to_from_road_matrix;
         
         int next_road_id;
-        if(car.is_init == 0) {
+//        if(car.is_init == 0) {
         	car.cur_speed = Math.min(this.road_speed, car.car_max_speed);
         	if(car.route_plan.size()>1) {
         		next_road_id = car.route_plan.get(1);
@@ -119,8 +120,8 @@ public class Road {
         		car.next_road = -1;
                 car.next_road_speed = -1;
                 car.dir = 0;
-        	}
-        	car.is_init = 1;
+//        	}
+//        	car.is_init = 1;
         }
         int channel;
         for(channel=0; channel<this.road_channel; channel++) {
@@ -179,6 +180,7 @@ public class Road {
 	public void run_car_in_init_list(Map<Integer, Car> car_dict, Map<Integer, Road> road_dict, 
 			Map<Integer, Cross> cross_dict, int cur_time, boolean priority, 
 			Map<String, Integer> statistics_info, int direction) {
+//		Collections.sort(this.init_list, new my_sort());
 		ArrayList<Integer> init_list = this.init_list;
 		ArrayList<Integer> copy_init_list = (ArrayList<Integer>) init_list.clone();
 		if(init_list.size() == 0) {
