@@ -15,8 +15,8 @@ import java.util.Queue;
 
 
 public class Graph {
-	public int N = Parameter.p_N;
-	public int clear_num = Parameter.p_clear_num;
+//	public int N = Parameter.p_N;
+//	public int clear_num = Parameter.p_clear_num;
 	
 	public int dis_compute(Road road, int dir) {
 		int length = road.road_length;
@@ -214,87 +214,87 @@ public class Graph {
 		}
 	}
 	
-	private void set_car_actual_time_and_route_plan() {
-		List<Integer> priority_cars = new LinkedList<>();
-		List<Integer> normal_cars = new LinkedList<>();
-		Map<Integer, Integer> preset_car_time = new HashMap<>(); // time: 数量
-		this.average_plan(priority_cars, normal_cars, preset_car_time); // 初始化上面三个变量
-		
-		int time = 0;
-		int start_index;
-		int end_index;
-		Car car;
-		while(!normal_cars.isEmpty()) {
-			time++;
-			if(time % this.clear_num == 0) { // 每隔一段时间对路径回归原来的权重（去累加效应）
-				this.clear_cost();
-			}
-			
-			int N = this.N;
-			if(preset_car_time.containsKey(time)) {
-				N -= preset_car_time.get(time);
-			}
-			if(N<=0)
-				continue;
-			boolean flag = false;
-			
-			if(!priority_cars.isEmpty()) {
-				Iterator<Integer> pri_iter = priority_cars.iterator();
-				while(pri_iter.hasNext()) {
-					int car_id = pri_iter.next();
-					if(Main.car_dict.get(car_id).car_plan_time<=time) {
-						
-						// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-						// 对car_id 进行路径规划
-						car = Main.car_dict.get(car_id);
-						start_index = this.id_to_index.get(car.car_from);
-						end_index = this.id_to_index.get(car.car_to);
-						this.dijkstra(start_index, end_index);
-						car.route_plan = this.generate_route_plan(end_index);
-						// 权值累加函数
-						this.cost_accumulation(car.route_plan, car.car_from);
-						// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-						
-						pri_iter.remove();
-						car.car_actual_time = time;
-						N--;
-						if(N==0){
-							flag = true;
-							break;
-						}
-					}
-				}
-				if(flag) {
-					continue;
-				}
-			}
-			
-			Iterator<Integer> nor_iter = normal_cars.iterator();
-			while(nor_iter.hasNext()) {
-				int car_id = nor_iter.next();
-				if(Main.car_dict.get(car_id).car_plan_time<=time) {
-					
-					// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-					// 对car_id 进行路径规划
-					car = Main.car_dict.get(car_id);
-					start_index = this.id_to_index.get(car.car_from);
-					end_index = this.id_to_index.get(car.car_to);
-					this.dijkstra(start_index, end_index);
-					car.route_plan = this.generate_route_plan(end_index);
-					// 权值累加函数
-					this.cost_accumulation(car.route_plan, car.car_from);
-					// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-					
-					nor_iter.remove();
-					Main.car_dict.get(car_id).car_actual_time = time;
-					N--;
-					if(N==0){
-						break;
-					}
-				}
-			}
-		}
-	}
+//	private void set_car_actual_time_and_route_plan() {
+//		List<Integer> priority_cars = new LinkedList<>();
+//		List<Integer> normal_cars = new LinkedList<>();
+//		Map<Integer, Integer> preset_car_time = new HashMap<>(); // time: 数量
+//		this.average_plan(priority_cars, normal_cars, preset_car_time); // 初始化上面三个变量
+//		
+//		int time = 0;
+//		int start_index;
+//		int end_index;
+//		Car car;
+//		while(!normal_cars.isEmpty()) {
+//			time++;
+//			if(time % this.clear_num == 0) { // 每隔一段时间对路径回归原来的权重（去累加效应）
+//				this.clear_cost();
+//			}
+//			
+//			int N = this.N;
+//			if(preset_car_time.containsKey(time)) {
+//				N -= preset_car_time.get(time);
+//			}
+//			if(N<=0)
+//				continue;
+//			boolean flag = false;
+//			
+//			if(!priority_cars.isEmpty()) {
+//				Iterator<Integer> pri_iter = priority_cars.iterator();
+//				while(pri_iter.hasNext()) {
+//					int car_id = pri_iter.next();
+//					if(Main.car_dict.get(car_id).car_plan_time<=time) {
+//						
+//						// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//						// 对car_id 进行路径规划
+//						car = Main.car_dict.get(car_id);
+//						start_index = this.id_to_index.get(car.car_from);
+//						end_index = this.id_to_index.get(car.car_to);
+//						this.dijkstra(start_index, end_index);
+//						car.route_plan = this.generate_route_plan(end_index);
+//						// 权值累加函数
+//						this.cost_accumulation(car.route_plan, car.car_from);
+//						// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//						
+//						pri_iter.remove();
+//						car.car_actual_time = time;
+//						N--;
+//						if(N==0){
+//							flag = true;
+//							break;
+//						}
+//					}
+//				}
+//				if(flag) {
+//					continue;
+//				}
+//			}
+//			
+//			Iterator<Integer> nor_iter = normal_cars.iterator();
+//			while(nor_iter.hasNext()) {
+//				int car_id = nor_iter.next();
+//				if(Main.car_dict.get(car_id).car_plan_time<=time) {
+//					
+//					// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//					// 对car_id 进行路径规划
+//					car = Main.car_dict.get(car_id);
+//					start_index = this.id_to_index.get(car.car_from);
+//					end_index = this.id_to_index.get(car.car_to);
+//					this.dijkstra(start_index, end_index);
+//					car.route_plan = this.generate_route_plan(end_index);
+//					// 权值累加函数
+//					this.cost_accumulation(car.route_plan, car.car_from);
+//					// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//					
+//					nor_iter.remove();
+//					Main.car_dict.get(car_id).car_actual_time = time;
+//					N--;
+//					if(N==0){
+//						break;
+//					}
+//				}
+//			}
+//		}
+//	}
 	
 	
 	

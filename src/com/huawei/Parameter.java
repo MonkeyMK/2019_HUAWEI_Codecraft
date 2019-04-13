@@ -18,21 +18,15 @@ public class Parameter {
 	public static void set_parameter() {
 		if(Main.car_dict.containsKey(37819)) {
 			// 地图一的参数
-			Parameter.p_N = 40;
-			Parameter.p_clear_num = 100;
 			Parameter.p_min_degree_of_crowding = 0.3;
-			
-			Parameter.p_base = 43;
+			Parameter.p_base = 42;
 			Parameter.p_k = 0.3;
 			Parameter.p_NA = 5500;
-			Parameter.p_NMAX = 46;
+			Parameter.p_NMAX = 45;
 			
 		}else {
 			// 地图二的参数
-			Parameter.p_N = 45;
-			Parameter.p_clear_num = 100;
 			Parameter.p_min_degree_of_crowding = 0.3;
-			
 			Parameter.p_base = 42;
 			Parameter.p_k = 0.3;
 			Parameter.p_NA = 5500;
