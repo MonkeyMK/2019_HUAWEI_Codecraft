@@ -35,9 +35,9 @@ public class Graph {
 			channel_punish = 0;
 		}
 //		channel_punish = 10 / (road.road_channel * road.road_channel);
-//		if((road.car_nums[dir]+0.0)/road.amount_all_position > 0.7)
-//			return 1000000;
-//		else
+		if((road.car_nums[dir]+0.0)/road.amount_all_position > Parameter.p_max_crowd)
+			return 1000000;
+		else
 			return length + degree_of_crowding + channel_punish;
 	}
 	

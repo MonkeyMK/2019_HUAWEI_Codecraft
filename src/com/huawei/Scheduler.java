@@ -855,7 +855,7 @@ public class Scheduler {
 			        	other_cross_id = road.road_from;
 			        }
 			        
-			        double car_num_condition = 0.1;
+			        double car_num_condition = Parameter.p_car_num_condition;
 			        if(cur_cross_id == next_road.road_from) {
 			        	if((next_road.car_nums[0] + 0.0)/next_road.amount_all_position < car_num_condition)
 			        		continue;
@@ -905,7 +905,7 @@ public class Scheduler {
         	other_cross_id = road.road_from;
         }
 	        
-        double car_num_condition = 0.1;
+        double car_num_condition = Parameter.p_car_num_condition;
         if(cur_cross_id == next_road.road_from) {
         	if((next_road.car_nums[0] + 0.0)/next_road.amount_all_position < car_num_condition)
         		return;
