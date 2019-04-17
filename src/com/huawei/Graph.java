@@ -27,6 +27,7 @@ public class Graph {
 			degree_of_crowding = 0;
 		}else {
 			degree_of_crowding = (int)Math.exp(((road.car_nums[dir]+0.0)/road.amount_all_position) * 10);
+//			degree_of_crowding = (int)Math.pow(4, ((road.car_nums[dir]+0.0)/road.amount_all_position) * 10);
 		}
 		
 		if(road.road_channel < 3) {

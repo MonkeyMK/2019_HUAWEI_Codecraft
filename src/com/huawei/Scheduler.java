@@ -76,6 +76,9 @@ public class Scheduler {
 	public int finished_time_normal_car = -1;  // （已完成初始化）
 	public int T = -1;  // （已完成初始化）
 	
+	public int preset_car_num;
+	public int preset_car_num_gate;
+	
 	// 其他info
 	public int time = 0;  // （已完成初始化）
 	public Map<String, Integer> statistics_info = new HashMap<>();  // （已完成初始化）
@@ -88,7 +91,11 @@ public class Scheduler {
 	List<Integer> normal_cars = new LinkedList<>();
 	Map<Integer, Integer> preset_car_time = new HashMap<>(); // time: 数量
 	
-	
+	public void add_preset() {
+		for(int i=0;i<this.preset_car_num_gate;i++) {
+			Main.change_preset.add(this.preset_car_list.get(i));
+		}
+	}
 	
 	public Scheduler(Map<Integer, Car> car_dict, Map<Integer, Road> road_dict, Map<Integer, Cross> cross_dict,
 			ArrayList<Integer> priority_car_list, ArrayList<Integer> preset_car_list) {
@@ -99,6 +106,9 @@ public class Scheduler {
 		this.priority_car_list = priority_car_list;
 		this.preset_car_list = preset_car_list;
 		this.preset_car_list.sort(new my_sort());
+		
+		this.preset_car_num = preset_car_list.size();
+		this.preset_car_num_gate = (int)(this.preset_car_num * 0.1) - 1;
 		
 		this.all_car_num = this.car_dict.size();
 		this.priority_car_num = this.priority_car_list.size();
@@ -112,6 +122,7 @@ public class Scheduler {
 		g = new Graph();
 		this.arrange_cars_by_road();
 		this.average_plan(); 
+		
 	}
 	
 	
@@ -830,7 +841,8 @@ public class Scheduler {
 				if(first_priority_car[0]!=-1) {
 					Car car = this.car_dict.get(first_priority_car[0]);
 					
-					if(Main.preset_car_list.contains(car.car_id))
+					if(Main.preset_car_list.contains(car.car_id) &&
+							!Main.change_preset.contains(car.car_id))
 						continue;
 					
 					if(car.has_real_time_plan != false) {
@@ -890,7 +902,8 @@ public class Scheduler {
 		}
 		car.has_real_time_plan = true;
 		
-		if(Main.preset_car_list.contains(car.car_id))
+		if(Main.preset_car_list.contains(car.car_id) &&
+				!Main.change_preset.contains(car.car_id))
 			return;
 		
 		Road next_road = this.road_dict.get(car.route_plan.get(car.cur_route_plan_index+1));

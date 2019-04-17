@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class Main {
@@ -16,6 +17,7 @@ public class Main {
 	public static Map<Integer, Cross> cross_dict = new HashMap<>();
 	public static ArrayList<Integer> priority_car_list = new ArrayList<>();
 	public static ArrayList<Integer> preset_car_list = new ArrayList<>();
+	public static List<Integer> change_preset = new ArrayList<>();
 	
 	// 1、建立car_dict； 首先建立Car对象，然后put进car_dict
 	public static void create_car_dict(String carPath) throws NumberFormatException, IOException {
@@ -165,15 +167,17 @@ public class Main {
 		while (iter.hasNext()) {
 			Map.Entry<Integer, Car> entry = iter.next();
 			car = entry.getValue();
-			if(!Main.preset_car_list.contains(car.car_id)) {
-				StringBuffer strBuf = new StringBuffer();
-				strBuf.append("(" + car.car_id + "," + car.car_actual_time);
-				for(int j=0;j<car.route_plan.size();j++) {
-					strBuf.append("," + car.route_plan.get(j));
-				}
-				strBuf.append(")\n");
-				bw.write(strBuf.toString());
+			if(Main.preset_car_list.contains(car.car_id) &&
+					!Main.change_preset.contains(car.car_id))
+				continue;
+			
+			StringBuffer strBuf = new StringBuffer();
+			strBuf.append("(" + car.car_id + "," + car.car_actual_time);
+			for(int j=0;j<car.route_plan.size();j++) {
+				strBuf.append("," + car.route_plan.get(j));
 			}
+			strBuf.append(")\n");
+			bw.write(strBuf.toString());
 		}
 		bw.flush();
 		bw.close();
